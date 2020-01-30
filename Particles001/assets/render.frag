@@ -1,8 +1,71 @@
 #version 150 core
 
-out highp vec4 	oColor;
+in vec3     color;
+in vec4     vShadowCoord;
+
+out highp vec4     oColor;
+
+uniform sampler2DShadow uShadowMap;
+
+
+
+float samplePCF3x3( vec4 sc )
+{
+    const int s = 2;
+    
+    float shadow = 0.0;
+    shadow += textureProjOffset( uShadowMap, sc, ivec2(-s,-s) );
+    shadow += textureProjOffset( uShadowMap, sc, ivec2(-s, 0) );
+    shadow += textureProjOffset( uShadowMap, sc, ivec2(-s, s) );
+    shadow += textureProjOffset( uShadowMap, sc, ivec2( 0,-s) );
+    shadow += textureProjOffset( uShadowMap, sc, ivec2( 0, 0) );
+    shadow += textureProjOffset( uShadowMap, sc, ivec2( 0, s) );
+    shadow += textureProjOffset( uShadowMap, sc, ivec2( s,-s) );
+    shadow += textureProjOffset( uShadowMap, sc, ivec2( s, 0) );
+    shadow += textureProjOffset( uShadowMap, sc, ivec2( s, s) );
+    return shadow/9.0;;
+}
+
+float samplePCF4x4( vec4 sc )
+{
+    const int r = 2;
+    const int s = 2 * r;
+    
+    float shadow = 0.0;
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s,-s) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r,-s) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2( r,-s) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2( s,-s) );
+    
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s,-r) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r,-r) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2( r,-r) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2( s,-r) );
+    
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s, r) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r, r) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2( r, r) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2( s, r) );
+    
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s, s) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r, s) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2( r, s) );
+    shadow += textureProjOffset( uShadowMap,  sc, ivec2( s, s) );
+        
+    return shadow/16.0;
+}
 
 void main( void )
 {
-	oColor = vec4(1.0);
+    if(distance(gl_PointCoord, vec2(.5)) > .5) {
+        discard;
+    }
+    
+    vec4 sc    = vShadowCoord / vShadowCoord.w;
+    float Shadow        = samplePCF4x4( sc );
+    
+    Shadow = mix(Shadow, 1.0, .25);
+    
+    
+	oColor = vec4(color * Shadow, 1.0);
 }
