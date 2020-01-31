@@ -69,7 +69,7 @@ void main( void )
     shadow = mix(shadow, 1.0, .25);
     
     vec4 finalColor = texture(uParticleMap, gl_PointCoord);
-    finalColor.rgb *= shadow;
+    finalColor.rgb *= shadow * color;
     
     
     oColor = finalColor;

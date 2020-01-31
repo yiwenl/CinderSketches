@@ -141,7 +141,12 @@ void Particles001App::setup()
     
     
     
-    mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "render.vert" ) ).fragment( loadAsset("render.frag")));
+    mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "render.vert" ) ).fragment( loadAsset("render.frag"))
+                                       .attribLocation( "ciPosition", 0 )
+                                       .attribLocation( "iPositionOrg", 2 )
+                                       .attribLocation( "iRandom", 3 )
+                                       .attribLocation( "iLife", 4 )
+                                    );
     mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "update.vert" ) )
                                     .feedbackFormat( GL_INTERLEAVED_ATTRIBS )
                                     .feedbackVaryings( { "position", "velocity", "positionOrg", "random", "life"} )
@@ -151,6 +156,12 @@ void Particles001App::setup()
                                     .attribLocation( "iRandom", 3 )
                                     .attribLocation( "iLife", 4 )
                                     );
+    
+    auto activeAttribs = mRenderProg->getActiveAttributes();
+    for( auto &attrib : activeAttribs ) {
+        console() << attrib.getName() << " : " << attrib.getSemantic() << endl;
+    }
+    
     
     mCamUi = CameraUi( &mCam, getWindow() );
     

@@ -155,17 +155,18 @@ void main()
     float f;
     vec3 acc = vec3(0.0);
     acc.z -= 1.5;
-    float posOffset = snoise(pos * 0.5 + iRandom * 0.1 + uTime * 0.5) * .5 + .5;
+    float posOffset = snoise(pos * 0.5 + iRandom * 0.01 + uTime * 0.5) * .5 + .5;
     posOffset = mix(0.1, 1.0, posOffset) * 1.5;
     vec3 noise = curlNoise(pos * posOffset + uTime * 0.5);
     noise.z = noise.z * .5 + 0.5;
+    noise.z *= 2.0;
     vec3 forceGravity = normalize(pos);
 
     vec3 forceRotate = normalize(pos * vec3(1.0, 1.0, 0.0));
     forceRotate.xy = rotate(forceRotate.xy, PI * 0.7);
 
     acc -= forceGravity;
-    acc += forceRotate * 0.5;
+    acc += forceRotate * 0.75;
     acc += noise * 0.5;
 
 

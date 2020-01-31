@@ -8,6 +8,9 @@ uniform mat4    uShadowMatrix;
 uniform vec2    uViewport;
 
 in vec4			ciPosition;
+in vec3			iPositionOrg;
+in vec3			iRandom;
+in float        iLife;
 
 out vec3        color;
 out vec4        vShadowCoord;
@@ -18,17 +21,20 @@ const mat4 biasMatrix = mat4( 0.5, 0.0, 0.0, 0.0,
                                 0.5, 0.5, 0.5, 1.0 );
 
 
-const float radius = 0.02;
+const float radius = 0.025;
 
 void main( void )
 {
-	gl_Position	= ciModelViewProjection * ciPosition;
+    vec4 pos = ciPosition;
+    pos.z -= 1.0;
+	gl_Position	= ciModelViewProjection * pos;
 	
-    
     color = vec3(1.0);
     
     float distOffset = uViewport.y * ciProjectionMatrix[1][1] * radius / gl_Position.w;
-    gl_PointSize = distOffset;
+    float scale = mix(0.5, 1.0, iRandom.x);
+    float lifeScale = smoothstep(0.5, 0.4, abs(iLife - 0.5));
+    gl_PointSize = distOffset * lifeScale * scale;
     
-    vShadowCoord    = ( biasMatrix * uShadowMatrix * ciModelMatrix ) * ciPosition;
+    vShadowCoord    = ( biasMatrix * uShadowMatrix * ciModelMatrix ) * pos;
 }
