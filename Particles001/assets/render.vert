@@ -18,14 +18,14 @@ const mat4 biasMatrix = mat4( 0.5, 0.0, 0.0, 0.0,
                                 0.5, 0.5, 0.5, 1.0 );
 
 
-const float radius = 0.05;
+const float radius = 0.02;
 
 void main( void )
 {
 	gl_Position	= ciModelViewProjection * ciPosition;
 	
     
-    color = iRandom;
+    color = vec3(1.0);
     
     float distOffset = uViewport.y * ciProjectionMatrix[1][1] * radius / gl_Position.w;
     gl_PointSize = distOffset;

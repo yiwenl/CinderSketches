@@ -6,6 +6,7 @@ in vec4     vShadowCoord;
 out highp vec4     oColor;
 
 uniform sampler2DShadow uShadowMap;
+uniform sampler2D uParticleMap;
 
 
 
@@ -66,6 +67,10 @@ void main( void )
     
     Shadow = mix(Shadow, 1.0, .25);
     
+    vec4 finalColor = texture(uParticleMap, gl_PointCoord);
+    finalColor.rgb *= Shadow;
     
-	oColor = vec4(color * Shadow, 1.0);
+    
+    oColor = finalColor;
+//    oColor = vec4(gl_PointCoord, 0.0, 1.0);
 }

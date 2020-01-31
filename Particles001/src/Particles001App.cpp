@@ -6,6 +6,7 @@
 #include "cinder/Camera.h"
 #include "cinder/CameraUi.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/GeomIo.h"
 
 #include "cinder/gl/Fbo.h"
 #include "cinder/Log.h"
@@ -30,6 +31,7 @@ class Particles001App : public App {
     private :
         gl::GlslProgRef mRenderProg;
         gl::GlslProgRef mUpdateProg;
+        gl::GlslProgRef mParticleProg;
     
     // Descriptions of particle data layout.
     gl::VaoRef        mAttributes[2];
@@ -45,12 +47,16 @@ class Particles001App : public App {
     // cameras
     CameraPersp             mCam;
     CameraPersp             mLightCam;
+    CameraOrtho             mCamParticle;
     CameraUi                mCamUi;
     
     gl::FboRef              mFbo;
+    gl::FboRef              mFboParticle;
     gl::Texture2dRef        mShadowMapTex;
+    gl::Texture2dRef        mParticleTex;
     
     vec3                    mLightPos;
+    gl::BatchRef            mSphere;
 };
 
 
@@ -62,7 +68,7 @@ struct Particle
     float   life;
 };
 
-const int NUM_PARTICLES = 512 * 512 * 2;
+const int NUM_PARTICLES = 512 * 512;
 
 
 void prepareSettings( Particles001App::Settings *settings) {
@@ -121,7 +127,13 @@ void Particles001App::setup()
     }
     
     
+    
     mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "render.vert" ) ).fragment( loadAsset("render.frag")));
+    
+    auto activeAttribs = mRenderProg->getActiveAttributes();
+                                   for( auto &attrib : activeAttribs ) {
+    console() << attrib.getName() << " : " << attrib.getSemantic() << endl;
+                                   }
     mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "update.vert" ) )
                                     .feedbackFormat( GL_INTERLEAVED_ATTRIBS )
                                     .feedbackVaryings( { "position", "positionOrg", "random", "life"} )
@@ -134,7 +146,8 @@ void Particles001App::setup()
     mCamUi = CameraUi( &mCam, getWindow() );
     
     // shadow mapping
-    mLightPos = vec3( 0.0f, 10.0f, 4.0f );
+    float scale = 0.4f;
+    mLightPos = vec3( 0.0f, 10.0f * scale, 4.0f * scale);
     gl::Texture2d::Format depthFormat;
     depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
     depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
@@ -142,15 +155,41 @@ void Particles001App::setup()
     depthFormat.setMinFilter( GL_LINEAR );
     depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
     depthFormat.setCompareFunc( GL_LEQUAL );
-    
     mShadowMapTex = gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT, depthFormat );
+    
     gl::Fbo::Format fboFormat;
     fboFormat.attachment( GL_DEPTH_ATTACHMENT, mShadowMapTex );
     mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, fboFormat );
     
+    gl::Fbo::Format fboFormatParticle;
+    mFboParticle = gl::Fbo::create( 64, 64, fboFormatParticle.colorTexture() );
+    
     // Set up camera from the light's viewpoint
     mLightCam.setPerspective( 100.0f, mFbo->getAspectRatio(), 1.0f, 50.0f );
     mLightCam.lookAt( mLightPos, vec3( 0.0f ) );
+    
+    
+    //  particle texture
+    mParticleProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particle.vert" ) ).fragment( loadAsset("particle.frag")));
+    auto sphere = gl::VboMesh::create( geom::Icosphere() );
+    mSphere = gl::Batch::create( sphere, mParticleProg );
+    
+    float r = 1.0f;
+    mCamParticle.setOrtho(-r, r, -r, r, .1f, 10.0f);
+    mCamParticle.lookAt(vec3(0.0, 0.0, 5.0f), vec3(0.0, 0.0, 0.0));
+    
+    gl::ScopedFramebuffer fbo( mFboParticle );
+    gl::ScopedViewport viewport( vec2( 0.0f ), mFboParticle->getSize() );
+    
+    gl::clear( Color( 0, 0, 0 ) );
+    gl::setMatrices( mCamParticle );
+    gl::enableDepthRead();
+    gl::enableDepthWrite();
+
+    gl::ScopedGlslProg prog( mParticleProg );
+    mParticleProg->uniform("uLightPos", mLightPos);
+    
+    mSphere->draw();
 }
 
 void Particles001App::mouseDown( MouseEvent event )
@@ -164,7 +203,6 @@ void Particles001App::update()
     gl::ScopedState rasterizer( GL_RASTERIZER_DISCARD, true );    // turn off fragment stage
     
 //    mUpdateProg->uniform("uCenter", getWindowCenter());
-//    console() << "Window Size : " << getWindowSize() << endl;
     
     // Bind the source data (Attributes refer to specific buffers).
     gl::ScopedVao source( mAttributes[mSourceIndex] );
@@ -221,9 +259,21 @@ void Particles001App::draw()
     gl::ScopedTextureBind texScope( mShadowMapTex, (uint8_t) 0 );
     mRenderProg->uniform( "uShadowMap", 0 );
     
+    gl::ScopedTextureBind texScopeParticle( mFboParticle->getColorTexture(), (uint8_t) 1 );
+    mRenderProg->uniform( "uParticleMap", 1 );
+    
     gl::ScopedVao vao( mAttributes[mSourceIndex] );
     gl::context()->setDefaultShaderVars();
     gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
+    
+
+    /*/
+    gl::setMatricesWindow( toPixels( getWindowSize() ) );
+    int s = 128;
+    gl::draw( mFboParticle->getColorTexture(), Rectf( 0, 0, s, s ) );
+    gl::draw( mFbo->getDepthTexture(), Rectf( s, 0, s * 2, s ) );
+     
+    //*/
 }
 
 CINDER_APP( Particles001App, RendererGl( RendererGl::Options().msaa( 4 ) ), prepareSettings )
