@@ -77,14 +77,14 @@ struct Particle
     float   life;
 };
 
-const int NUM_PARTICLES = 512 * 512 ;
+const int NUM_PARTICLES = 400e3;
 
 
 void prepareSettings( Particles001App::Settings *settings) {
 //    settings->setWindowSize(1920, 1080);
-//    settings->setWindowSize(1280, 720);
+    settings->setWindowSize(1280, 720);
+//    settings->setWindowSize(1080 * 0.8, 1350 * 0.8);
     
-    settings->setWindowSize(1080 * 0.8, 1350 * 0.8);
     settings->setHighDensityDisplayEnabled(); // try removing this line
     settings->setMultiTouchEnabled( false );
 }
@@ -108,7 +108,7 @@ void Particles001App::setup()
     vector<Particle> particles;
     particles.assign( NUM_PARTICLES, Particle() );
 
-    float zRange = 0.3f;
+    float zRange = 0.1f;
     
     
     for( int i =0; i<particles.size(); i++) {
@@ -118,13 +118,10 @@ void Particles001App::setup()
         float _y = sin(a) * r;
         float z = randFloat(-zRange, zRange);
         
-//        float s = mPerlin.noise(_x, _y) * 0.1;
         float s = mPerlin.fBm(_x, _y, z) * 0.2;
         r = randFloat(2.0, 2.5);
         float x = cos(a) * r * ( 1.0 + s);
         float y = sin(a) * r * ( 1.0 + s);
-        
-        
         
         auto &p = particles.at( i );
         
