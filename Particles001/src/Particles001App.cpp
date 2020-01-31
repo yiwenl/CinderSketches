@@ -9,7 +9,6 @@
 #include "cinder/GeomIo.h"
 #include "cinder/Perlin.h"
 
-#include "cinder/gl/Fbo.h"
 #include "cinder/Log.h"
 
 
