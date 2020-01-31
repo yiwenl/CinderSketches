@@ -7,6 +7,7 @@
 #include "cinder/CameraUi.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/GeomIo.h"
+#include "cinder/Perlin.h"
 
 #include "cinder/gl/Fbo.h"
 #include "cinder/Log.h"
@@ -27,11 +28,13 @@ class Particles001App : public App {
 	void draw() override;
     
     void updateShadowMap();
+    void updateEnvMap();
     
     private :
         gl::GlslProgRef mRenderProg;
         gl::GlslProgRef mUpdateProg;
         gl::GlslProgRef mParticleProg;
+        gl::GlslProgRef mEnvProg;
     
     // Descriptions of particle data layout.
     gl::VaoRef        mAttributes[2];
@@ -52,11 +55,14 @@ class Particles001App : public App {
     
     gl::FboRef              mFbo;
     gl::FboRef              mFboParticle;
+    gl::FboRef              mFboEnv;
     gl::Texture2dRef        mShadowMapTex;
-    gl::Texture2dRef        mParticleTex;
+    gl::TextureRef          mEnvTex;
     
     vec3                    mLightPos;
     gl::BatchRef            mSphere;
+    gl::BatchRef            mEnv;
+    Perlin                  mPerlin;
 
     float mSeed;
 };
@@ -71,12 +77,14 @@ struct Particle
     float   life;
 };
 
-const int NUM_PARTICLES = 512 * 512;
+const int NUM_PARTICLES = 512 * 512 ;
 
 
 void prepareSettings( Particles001App::Settings *settings) {
 //    settings->setWindowSize(1920, 1080);
-    settings->setWindowSize(1280, 720);
+//    settings->setWindowSize(1280, 720);
+    
+    settings->setWindowSize(1080 * 0.8, 1350 * 0.8);
     settings->setHighDensityDisplayEnabled(); // try removing this line
     settings->setMultiTouchEnabled( false );
 }
@@ -93,26 +101,36 @@ void Particles001App::setup()
 
     mSeed = randFloat(1000.0f);
     
-    mCam.setPerspective( 75.0f, getWindowAspectRatio(), 0.5f, 500.0f );
+    mCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.5f, 500.0f );
     mCam.lookAt( vec3( 0.0, 0.0, 5.0), vec3( 0.0f ) );
     
     console() << "Number of particles :  " << NUM_PARTICLES << endl;
     vector<Particle> particles;
     particles.assign( NUM_PARTICLES, Particle() );
 
-    float zRange = 0.1f;
+    float zRange = 0.3f;
+    
     
     for( int i =0; i<particles.size(); i++) {
         float a = randFloat() * M_PI * 2.0;
-        float r = randFloat(2.46, 2.5);
-        float x = cos(a) * r;
-        float y = sin(a) * r;
+        float r = 3.0;
+        float _x = cos(a) * r;
+        float _y = sin(a) * r;
         float z = randFloat(-zRange, zRange);
+        
+//        float s = mPerlin.noise(_x, _y) * 0.1;
+        float s = mPerlin.fBm(_x, _y, z) * 0.2;
+        r = randFloat(2.0, 2.5);
+        float x = cos(a) * r * ( 1.0 + s);
+        float y = sin(a) * r * ( 1.0 + s);
+        
+        
+        
         auto &p = particles.at( i );
         
         p.pos = vec3(x, y, z);
         p.posOrg = vec3(x, y, z);
-        p.life = Rand::randFloat(0.5f, 1.0f);
+        p.life = Rand::randFloat(0.01f, 1.0f);
         p.random = vec3(randFloat(), randFloat(), randFloat());
     }
     
@@ -157,11 +175,6 @@ void Particles001App::setup()
                                     .attribLocation( "iLife", 4 )
                                     );
     
-    auto activeAttribs = mRenderProg->getActiveAttributes();
-    for( auto &attrib : activeAttribs ) {
-        console() << attrib.getName() << " : " << attrib.getSemantic() << endl;
-    }
-    
     
     mCamUi = CameraUi( &mCam, getWindow() );
     
@@ -184,10 +197,20 @@ void Particles001App::setup()
     gl::Fbo::Format fboFormatParticle;
     mFboParticle = gl::Fbo::create( 64, 64, fboFormatParticle.colorTexture() );
     
+    gl::Fbo::Format fboFormatEnv;
+    mFboEnv = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, fboFormatEnv.colorTexture() );
+    
     // Set up camera from the light's viewpoint
     mLightCam.setPerspective( 100.0f, mFbo->getAspectRatio(), 1.0f, 50.0f );
     mLightCam.lookAt( mLightPos, vec3( 0.0f ) );
     
+    //  loading environment texture
+    mEnvTex = gl::Texture::create( loadImage( loadAsset( "envmap.jpg" ) ), gl::Texture::Format().mipmap() );
+    
+    //  env sphere
+    mEnvProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "env.vert" ) ).fragment( loadAsset("copy.frag")));
+    auto sphereEnv = gl::VboMesh::create( geom::Icosphere() );
+    mEnv = gl::Batch::create(sphereEnv, mEnvProg);
     
     //  particle texture
     mParticleProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particle.vert" ) ).fragment( loadAsset("particle.frag")));
@@ -260,11 +283,38 @@ void Particles001App::updateShadowMap() {
     gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
 }
 
+void Particles001App::updateEnvMap() {
+    gl::ScopedFramebuffer fbo( mFboEnv );
+    gl::ScopedViewport viewport( vec2( 0.0f ), mFboEnv->getSize() );
+    
+    gl::clear( Color( 0, 0, 0 ) );
+    gl::setMatrices( mCam );
+    gl::enableDepthRead();
+    gl::enableDepthWrite();
+
+    gl::ScopedTextureBind texScopeEnv( mEnvTex, (uint8_t) 0 );
+    mEnvProg->uniform( "uColorMap", 0 );
+    mEnv->draw();
+}
+
 void Particles001App::draw()
 {
     updateShadowMap();
+    updateEnvMap();
     
-	gl::clear( Color( 0, 0, 0 ) );
+    gl::clear( Color( 0, 0, 0 ) );
+    // gl::clear( Color( 1, 1, 1 ) );
+    
+   gl::disableDepthRead();
+   gl::disableDepthWrite();
+   
+   gl::setMatricesWindow( toPixels( getWindowSize() ) );
+   gl::draw( mFboEnv->getColorTexture(), Rectf( 0, 0, getWindowWidth(), getWindowHeight() ) );
+   
+    gl::enableDepthRead();
+    gl::enableDepthWrite();
+    
+	
     gl::setMatrices( mCam );
     
 
@@ -281,16 +331,18 @@ void Particles001App::draw()
     gl::ScopedTextureBind texScopeParticle( mFboParticle->getColorTexture(), (uint8_t) 1 );
     mRenderProg->uniform( "uParticleMap", 1 );
     
+    gl::ScopedTextureBind texScopeEnv( mFboEnv->getColorTexture(), (uint8_t) 2 );
+    mRenderProg->uniform( "uEnvMap", 2 );
+    
     gl::ScopedVao vao( mAttributes[mSourceIndex] );
     gl::context()->setDefaultShaderVars();
     gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
-    
 
-    /*/
-    gl::setMatricesWindow( toPixels( getWindowSize() ) );
-    int s = 128;
-    gl::draw( mFboParticle->getColorTexture(), Rectf( 0, 0, s, s ) );
-    gl::draw( mFbo->getDepthTexture(), Rectf( s, 0, s * 2, s ) );
+    //*/
+//    gl::setMatricesWindow( toPixels( getWindowSize() ) );
+//    int s = 128;
+//    gl::draw( mFboEnv->getColorTexture(), Rectf( 0, 0, s, s ) );
+//    gl::draw( mFbo->getDepthTexture(), Rectf( s, 0, s * 2, s ) );
      
     //*/
 }

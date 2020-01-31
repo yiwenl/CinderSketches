@@ -2,11 +2,15 @@
 
 in vec3     color;
 in vec4     vShadowCoord;
+in vec4     vScreenCoord;
+in float    vLife;
+
 
 out highp vec4     oColor;
 
 uniform sampler2DShadow uShadowMap;
 uniform sampler2D uParticleMap;
+uniform sampler2D uEnvMap;
 
 
 
@@ -56,6 +60,9 @@ float samplePCF4x4( vec4 sc )
     return shadow/16.0;
 }
 
+
+const float brOffset = 1.2;
+
 void main( void )
 {
     if(distance(gl_PointCoord, vec2(.5)) > .5) {
@@ -66,12 +73,16 @@ void main( void )
     float shadow        = samplePCF4x4( sc );
     // float shadow        = samplePCF3x3( sc );
     
-    shadow = mix(shadow, 1.0, .25);
+    shadow = mix(shadow, 1.0, .1);
+    vec2 screenUV = vScreenCoord.xy / vScreenCoord.w * .5 + .5;
+    vec4 colorEnv = texture(uEnvMap, screenUV);
     
     vec4 finalColor = texture(uParticleMap, gl_PointCoord);
-    finalColor.rgb *= shadow * color;
-    
+    finalColor.rgb *= shadow * color * colorEnv.rgb * brOffset;
+    // finalColor.rgb *= shadow * color * brOffset;
+
+    // float opacity = smoothstep(1.0, 0.8, vLife);
+    // finalColor.a *= opacity;
     
     oColor = finalColor;
-//    oColor = vec4(gl_PointCoord, 0.0, 1.0);
 }

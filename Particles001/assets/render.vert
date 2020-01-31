@@ -14,6 +14,8 @@ in float        iLife;
 
 out vec3        color;
 out vec4        vShadowCoord;
+out vec4        vScreenCoord;
+out float       vLife;
 
 const mat4 biasMatrix = mat4( 0.5, 0.0, 0.0, 0.0,
                                 0.0, 0.5, 0.0, 0.0,
@@ -21,7 +23,7 @@ const mat4 biasMatrix = mat4( 0.5, 0.0, 0.0, 0.0,
                                 0.5, 0.5, 0.5, 1.0 );
 
 
-const float radius = 0.025;
+const float radius = 0.02;
 
 void main( void )
 {
@@ -37,4 +39,7 @@ void main( void )
     gl_PointSize = distOffset * lifeScale * scale;
     
     vShadowCoord    = ( biasMatrix * uShadowMatrix * ciModelMatrix ) * pos;
+    vScreenCoord    = ciModelViewProjection * vec4(iPositionOrg, 1.0);
+
+    vLife = iLife;
 }

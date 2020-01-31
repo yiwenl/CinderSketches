@@ -154,12 +154,12 @@ void main()
     
     float f;
     vec3 acc = vec3(0.0);
-    acc.z -= 1.5;
+    acc.z -= 2.0;
     float posOffset = snoise(pos * 0.5 + iRandom * 0.01 + uTime * 0.5) * .5 + .5;
     posOffset = mix(0.1, 1.0, posOffset) * 1.5;
     vec3 noise = curlNoise(pos * posOffset + uTime * 0.5);
     noise.z = noise.z * .5 + 0.5;
-    noise.z *= 2.0;
+    noise.z *= 3.0;
     vec3 forceGravity = normalize(pos);
 
     vec3 forceRotate = normalize(pos * vec3(1.0, 1.0, 0.0));
@@ -170,13 +170,13 @@ void main()
     acc += noise * 0.5;
 
 
-    float speedOffset = mix(0.75, 1.0, iRandom.z);
+    float speedOffset = mix(0.95, 1.0, iRandom.z);
 
     vel += acc * 0.003 * speedOffset;
     pos += vel;
     vel *= 0.9;
     
-    life = iLife - mix(0.01, 0.025, random.x);
+    life = iLife - mix(0.01, 0.02, random.x);
     
     if(life < 0.0f) {
         life = 1.0;
