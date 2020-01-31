@@ -57,12 +57,15 @@ class Particles001App : public App {
     
     vec3                    mLightPos;
     gl::BatchRef            mSphere;
+
+    float mSeed;
 };
 
 
 struct Particle
 {
     vec3    pos;
+    vec3    vel;
     vec3    posOrg;
     vec3    random;
     float   life;
@@ -81,22 +84,30 @@ void prepareSettings( Particles001App::Settings *settings) {
 void Particles001App::setup()
 {
     setFrameRate(60.0f);
+    
+    gl::enableDepthRead();
+    gl::enableDepthWrite();
+    
     gl::enable( GL_POINT_SPRITE_ARB ); // or use: glEnable
     gl::enable( GL_VERTEX_PROGRAM_POINT_SIZE );   // or use: glEnable
+
+    mSeed = randFloat(1000.0f);
     
-    mCam.setPerspective( 40.0f, getWindowAspectRatio(), 0.5f, 500.0f );
-    mCam.lookAt( vec3( 0.0, 0.0, 10.0), vec3( 0.0f ) );
+    mCam.setPerspective( 75.0f, getWindowAspectRatio(), 0.5f, 500.0f );
+    mCam.lookAt( vec3( 0.0, 0.0, 5.0), vec3( 0.0f ) );
     
     console() << "Number of particles :  " << NUM_PARTICLES << endl;
     vector<Particle> particles;
     particles.assign( NUM_PARTICLES, Particle() );
+
+    float zRange = 0.1f;
     
     for( int i =0; i<particles.size(); i++) {
         float a = randFloat() * M_PI * 2.0;
-        float r = randFloat(1.0, 2.0);
+        float r = randFloat(2.46, 2.5);
         float x = cos(a) * r;
         float y = sin(a) * r;
-        float z = randFloat(-1.0f, 1.0f);
+        float z = randFloat(-zRange, zRange);
         auto &p = particles.at( i );
         
         p.pos = vec3(x, y, z);
@@ -119,35 +130,33 @@ void Particles001App::setup()
         gl::enableVertexAttribArray( 1 );
         gl::enableVertexAttribArray( 2 );
         gl::enableVertexAttribArray( 3 );
+        gl::enableVertexAttribArray( 4 );
         gl::vertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, pos) );
-        gl::vertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, posOrg) );
-        gl::vertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, random) );
-        gl::vertexAttribPointer( 3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, life) );
+        gl::vertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, vel) );
+        gl::vertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, posOrg) );
+        gl::vertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, random) );
+        gl::vertexAttribPointer( 4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, life) );
         
     }
     
     
     
     mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "render.vert" ) ).fragment( loadAsset("render.frag")));
-    
-    auto activeAttribs = mRenderProg->getActiveAttributes();
-                                   for( auto &attrib : activeAttribs ) {
-    console() << attrib.getName() << " : " << attrib.getSemantic() << endl;
-                                   }
     mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "update.vert" ) )
                                     .feedbackFormat( GL_INTERLEAVED_ATTRIBS )
-                                    .feedbackVaryings( { "position", "positionOrg", "random", "life"} )
+                                    .feedbackVaryings( { "position", "velocity", "positionOrg", "random", "life"} )
                                     .attribLocation( "iPosition", 0 )
-                                    .attribLocation( "iPositionOrg", 1 )
-                                    .attribLocation( "iRandom", 2 )
-                                    .attribLocation( "iLife", 3 )
+                                    .attribLocation( "iVelocity", 1 )
+                                    .attribLocation( "iPositionOrg", 2 )
+                                    .attribLocation( "iRandom", 3 )
+                                    .attribLocation( "iLife", 4 )
                                     );
     
     mCamUi = CameraUi( &mCam, getWindow() );
     
     // shadow mapping
     float scale = 0.4f;
-    mLightPos = vec3( 0.0f, 10.0f * scale, 4.0f * scale);
+    mLightPos = vec3( 2.0f * scale, 10.0f * scale, 4.0f * scale);
     gl::Texture2d::Format depthFormat;
     depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
     depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
@@ -203,6 +212,7 @@ void Particles001App::update()
     gl::ScopedState rasterizer( GL_RASTERIZER_DISCARD, true );    // turn off fragment stage
     
 //    mUpdateProg->uniform("uCenter", getWindowCenter());
+    mUpdateProg->uniform("uTime", float(getElapsedSeconds()) + mSeed);
     
     // Bind the source data (Attributes refer to specific buffers).
     gl::ScopedVao source( mAttributes[mSourceIndex] );
@@ -244,10 +254,8 @@ void Particles001App::draw()
     updateShadowMap();
     
 	gl::clear( Color( 0, 0, 0 ) );
-//    gl::setMatricesWindowPersp( getWindowSize(), 60.0f, 1.0f, 10000.0f );
     gl::setMatrices( mCam );
-    gl::enableDepthRead();
-    gl::enableDepthWrite();
+    
 
     gl::ScopedGlslProg prog( mRenderProg );
     
