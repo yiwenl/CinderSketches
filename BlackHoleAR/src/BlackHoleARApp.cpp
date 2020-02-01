@@ -60,7 +60,10 @@ private:
     gl::BatchRef            mEnv;
     Perlin                  mPerlin;
     
+    mat4                    mMtxScale;
     mat4                    mMtxModel;
+    mat4                    mMtxIdentity;
+    
 
     float mSeed = randFloat(1000.0f);
     
@@ -85,7 +88,7 @@ void prepareSettings( BlackHoleARApp::Settings *settings) {
 void BlackHoleARApp::setup()
 {
     float s = 0.05f;
-    mMtxModel = glm::scale(glm::mat4(1.0f), glm::vec3(s));
+    mMtxScale = glm::scale(glm::mat4(1.0f), glm::vec3(s));
     
     gl::enableDepthRead();
     gl::enableDepthWrite();
@@ -220,7 +223,7 @@ void BlackHoleARApp::setup()
 void BlackHoleARApp::touchesBegan( TouchEvent event )
 {
     console() << " Touch " << endl;
-//    mARSession.addAnchorRelativeToCamera( vec3(0.0f, 0.0f, -0.1f) );
+    mARSession.addAnchorRelativeToCamera( vec3(0.0f, 0.0f, -0.5f) );
     
     targetOffset = 1.0;
 }
@@ -261,11 +264,12 @@ void BlackHoleARApp::updateShadowMap() {
     gl::setMatrices( mLightCam );
     gl::enableDepthRead();
     gl::enableDepthWrite();
-    gl::setModelMatrix(mMtxModel);
+    gl::setModelMatrix(mMtxScale);
 
     gl::ScopedGlslProg prog( mRenderProg );
     
     mRenderProg->uniform("uViewport", vec2(getWindowSize()));
+    mRenderProg->uniform("uTranslateMatrix", mMtxIdentity);
     gl::ScopedVao vao( mAttributes[mSourceIndex] );
     gl::context()->setDefaultShaderVars();
     gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
@@ -296,21 +300,29 @@ void BlackHoleARApp::draw()
     
     gl::setMatricesWindow( toPixels( getWindowSize() ) );
     gl::draw( mFboEnv->getColorTexture(), Rectf( 0, 0, getWindowWidth() * 2, getWindowHeight() * 2 ) );
-
+    
+    
+    if( mARSession.getAnchors().size() <= 0) {
+        return;
+    }
+    
+//    console() << "Number of Anchors : " <<  mARSession.getAnchors()[0] << endl;
+    auto anchors = mARSession.getAnchors();
+    auto anchor = anchors[0];
+    
     gl::enableDepthRead();
     gl::enableDepthWrite();
     
-//    gl::ScopedMatrices matScp;
     gl::setViewMatrix( mARSession.getViewMatrix() );
     gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
-    gl::setModelMatrix(mMtxModel);
-    
+    gl::setModelMatrix(mMtxScale);
 
     gl::ScopedGlslProg prog( mRenderProg );
     
     mat4 shadowMatrix = mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
     mRenderProg->uniform("uViewport", vec2(getWindowSize()));
     mRenderProg->uniform("uOffset", offset);
+    mRenderProg->uniform("uTranslateMatrix", anchor.mTransform);
     mRenderProg->uniform("uShadowMatrix", shadowMatrix);
     
     gl::ScopedTextureBind texScope( mShadowMapTex, (uint8_t) 0 );
@@ -326,11 +338,9 @@ void BlackHoleARApp::draw()
     gl::context()->setDefaultShaderVars();
     gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
 
-    
 //    gl::setMatricesWindow( toPixels( getWindowSize() ) );
-//    int s = 128 * 2;
+//    int s = 256;
 //    gl::draw( mFbo->getDepthTexture(), Rectf( 0, 0, s, s ) );
-
 }
 
 CINDER_APP( BlackHoleARApp, RendererGl( RendererGl::Options().msaa( 4 ) ), prepareSettings )

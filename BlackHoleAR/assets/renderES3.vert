@@ -2,8 +2,10 @@
 
 uniform mat4	ciModelViewProjection;
 uniform mat4    ciProjectionMatrix;
+uniform mat4    ciViewMatrix;
 uniform mat4    ciModelMatrix;
 uniform mat4    uShadowMatrix;
+uniform mat4    uTranslateMatrix;
 
 uniform vec2    uViewport;
 uniform float   uOffset;
@@ -28,7 +30,8 @@ const float radius = 0.003;
 void main( void )
 {
 	vec4 pos = ciPosition;
-	gl_Position	= ciModelViewProjection * pos;
+	// gl_Position	= ciModelViewProjection * uTranslateMatrix * pos;
+	gl_Position	= ciProjectionMatrix * ciViewMatrix * uTranslateMatrix * ciModelMatrix * pos;
     color = vec3(1.0);
     
     float distOffset = uViewport.y * ciProjectionMatrix[1][1] * radius / gl_Position.w;
@@ -37,7 +40,7 @@ void main( void )
     gl_PointSize = distOffset * lifeScale * scale * uOffset;
     
     vShadowCoord    = ( biasMatrix * uShadowMatrix * ciModelMatrix ) * pos;
-    vScreenCoord    = ciModelViewProjection * vec4(iPositionOrg, 1.0);
+    vScreenCoord    = ciProjectionMatrix * ciViewMatrix * uTranslateMatrix * ciModelMatrix * vec4(iPositionOrg, 1.0);
 
     vLife = iLife;
 }
