@@ -78,7 +78,12 @@ float PCFShadow(sampler2D depths, vec2 size, vec4 shadowCoord) {
 
 }
 
-const float brOffset = 1.2;
+
+float luma(vec3 color) {
+  return dot(color, vec3(0.299, 0.587, 0.114));
+}
+
+const float brOffset = 1.5;
 
 void main( void )
 {

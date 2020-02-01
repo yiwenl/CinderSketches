@@ -6,6 +6,7 @@ uniform mat4    ciViewMatrix;
 uniform mat4    ciModelMatrix;
 uniform mat4    uShadowMatrix;
 uniform mat4    uTranslateMatrix;
+uniform mat4    uTouchMatrix;
 
 uniform vec2    uViewport;
 uniform float   uOffset;
@@ -40,7 +41,7 @@ void main( void )
     gl_PointSize = distOffset * lifeScale * scale * uOffset;
     
     vShadowCoord    = ( biasMatrix * uShadowMatrix * ciModelMatrix ) * pos;
-    vScreenCoord    = ciProjectionMatrix * ciViewMatrix * uTranslateMatrix * ciModelMatrix * vec4(iPositionOrg, 1.0);
+    vScreenCoord    = uTouchMatrix * uTranslateMatrix * ciModelMatrix * vec4(iPositionOrg, 1.0);
 
     vLife = iLife;
 }

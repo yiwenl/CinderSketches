@@ -61,7 +61,7 @@ private:
     Perlin                  mPerlin;
     
     mat4                    mMtxScale;
-    mat4                    mMtxModel;
+    mat4                    mMtxTouch;
     mat4                    mMtxIdentity;
     
 
@@ -230,6 +230,7 @@ void BlackHoleARApp::touchesBegan( TouchEvent event )
 
 void BlackHoleARApp::update()
 {
+    
     offset += (targetOffset - offset) * 0.05;
     // Update particles on the GPU
     gl::ScopedGlslProg prog( mUpdateProg );
@@ -270,6 +271,8 @@ void BlackHoleARApp::updateShadowMap() {
     
     mRenderProg->uniform("uViewport", vec2(getWindowSize()));
     mRenderProg->uniform("uTranslateMatrix", mMtxIdentity);
+    mRenderProg->uniform("uTouchMatrix", mMtxTouch);
+    
     gl::ScopedVao vao( mAttributes[mSourceIndex] );
     gl::context()->setDefaultShaderVars();
     gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
@@ -288,19 +291,29 @@ void BlackHoleARApp::updateEnvMap() {
 
 void BlackHoleARApp::draw()
 {
-    updateEnvMap();
-    updateShadowMap();
+    if(mARSession.getAnchors().size() <= 0) {
+        mMtxTouch = mARSession.getProjectionMatrix() * mARSession.getViewMatrix();
+        updateEnvMap();
+    } else {
+        updateShadowMap();
+    }
+    
 	gl::clear( Color( 0, 0, 0 ) );
-    
-    
     gl::ScopedMatrices matScp;
     
     gl::disableDepthRead();
     gl::disableDepthWrite();
     
-    gl::setMatricesWindow( toPixels( getWindowSize() ) );
-    gl::draw( mFboEnv->getColorTexture(), Rectf( 0, 0, getWindowWidth() * 2, getWindowHeight() * 2 ) );
     
+    
+    if(mARSession.getAnchors().size() <= 0) {
+        gl::setMatricesWindow( toPixels( getWindowSize() ) );
+        gl::draw( mFboEnv->getColorTexture(), Rectf( 0, 0, getWindowWidth() * 2, getWindowHeight() * 2 ) );
+    } else {
+        mARSession.drawRGBCaptureTexture(getWindowBounds());
+    }
+    
+    gl::setMatricesWindow( toPixels( getWindowSize() ) );
     
     if( mARSession.getAnchors().size() <= 0) {
         return;
@@ -324,6 +337,7 @@ void BlackHoleARApp::draw()
     mRenderProg->uniform("uOffset", offset);
     mRenderProg->uniform("uTranslateMatrix", anchor.mTransform);
     mRenderProg->uniform("uShadowMatrix", shadowMatrix);
+    mRenderProg->uniform("uTouchMatrix", mMtxTouch);
     
     gl::ScopedTextureBind texScope( mShadowMapTex, (uint8_t) 0 );
     mRenderProg->uniform( "uShadowMap", 0 );
@@ -337,10 +351,6 @@ void BlackHoleARApp::draw()
     gl::ScopedVao vao( mAttributes[mSourceIndex] );
     gl::context()->setDefaultShaderVars();
     gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
-
-//    gl::setMatricesWindow( toPixels( getWindowSize() ) );
-//    int s = 256;
-//    gl::draw( mFbo->getDepthTexture(), Rectf( 0, 0, s, s ) );
 }
 
 CINDER_APP( BlackHoleARApp, RendererGl( RendererGl::Options().msaa( 4 ) ), prepareSettings )

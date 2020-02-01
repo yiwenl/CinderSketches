@@ -21,7 +21,7 @@ static Config& getInstance()
                           // Instantiated on first use.
     return instance;
 }
-    int NUM_PARTICLES = 100e3;
+    int NUM_PARTICLES = 120e3;
 private:
     Config() {
         
