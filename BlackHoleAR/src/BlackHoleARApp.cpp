@@ -63,6 +63,9 @@ private:
     mat4                    mMtxModel;
 
     float mSeed = randFloat(1000.0f);
+    
+    float offset = 0.0f;
+    float targetOffset = 0.0f;
 };
 
 struct Particle
@@ -84,15 +87,8 @@ void BlackHoleARApp::setup()
     float s = 0.05f;
     mMtxModel = glm::scale(glm::mat4(1.0f), glm::vec3(s));
     
-    console() << mMtxModel << endl;
-
-        
-//    console() << "Model Matrix : " << endl;
-//    console() << mMtxModel << endl;
     gl::enableDepthRead();
     gl::enableDepthWrite();
-//    gl::enable( GL_POINT_SPRITE_ARB ); // or use: glEnable
-//    gl::enable( GL_VERTEX_PROGRAM_POINT_SIZE );   // or use: glEnable
     
     auto config = ARKit::SessionConfiguration()
                         .trackingType( ARKit::TrackingType::WorldTracking )
@@ -224,17 +220,21 @@ void BlackHoleARApp::setup()
 void BlackHoleARApp::touchesBegan( TouchEvent event )
 {
     console() << " Touch " << endl;
-    mARSession.addAnchorRelativeToCamera( vec3(0.0f, 0.0f, -0.1f) );
+//    mARSession.addAnchorRelativeToCamera( vec3(0.0f, 0.0f, -0.1f) );
+    
+    targetOffset = 1.0;
 }
 
 void BlackHoleARApp::update()
 {
+    offset += (targetOffset - offset) * 0.05;
     // Update particles on the GPU
     gl::ScopedGlslProg prog( mUpdateProg );
     gl::ScopedState rasterizer( GL_RASTERIZER_DISCARD, true );    // turn off fragment stage
 
-    //    mUpdateProg->uniform("uCenter", getWindowCenter());
+    // mUpdateProg->uniform("uCenter", getWindowCenter());
     mUpdateProg->uniform("uTime", float(getElapsedSeconds()) + mSeed);
+    mUpdateProg->uniform("uOffset", offset);
 
     // Bind the source data (Attributes refer to specific buffers).
     gl::ScopedVao source( mAttributes[mSourceIndex] );
@@ -279,9 +279,7 @@ void BlackHoleARApp::updateEnvMap() {
     
     gl::ScopedMatrices matScp;
     
-//    mARSession.drawRGBCaptureTexture( Area(vec2( 0.0f ), mFboEnv->getSize()) );
     mARSession.drawRGBCaptureTexture(getWindowBounds());
-    
 }
 
 void BlackHoleARApp::draw()
@@ -312,6 +310,7 @@ void BlackHoleARApp::draw()
     
     mat4 shadowMatrix = mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
     mRenderProg->uniform("uViewport", vec2(getWindowSize()));
+    mRenderProg->uniform("uOffset", offset);
     mRenderProg->uniform("uShadowMatrix", shadowMatrix);
     
     gl::ScopedTextureBind texScope( mShadowMapTex, (uint8_t) 0 );

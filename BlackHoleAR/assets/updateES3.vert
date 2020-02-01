@@ -15,6 +15,7 @@ out vec3  random;
 out float life;
 
 uniform float uTime;
+uniform float uOffset;
 
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0;  }
 vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0;  }
@@ -173,7 +174,7 @@ void main()
 
     float speedOffset = mix(0.95, 1.0, iRandom.z);
 
-    vel += acc * 0.003 * speedOffset;
+    vel += acc * 0.003 * speedOffset * uOffset;
     pos += vel;
     vel *= 0.9;
     

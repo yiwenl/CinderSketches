@@ -6,6 +6,7 @@ uniform mat4    ciModelMatrix;
 uniform mat4    uShadowMatrix;
 
 uniform vec2    uViewport;
+uniform float   uOffset;
 
 in vec4			ciPosition;
 in vec3			iPositionOrg;
@@ -33,7 +34,7 @@ void main( void )
     float distOffset = uViewport.y * ciProjectionMatrix[1][1] * radius / gl_Position.w;
     float scale = mix(0.5, 1.0, iRandom.x);
     float lifeScale = smoothstep(0.5, 0.4, abs(iLife - 0.5));
-    gl_PointSize = distOffset * lifeScale * scale;
+    gl_PointSize = distOffset * lifeScale * scale * uOffset;
     
     vShadowCoord    = ( biasMatrix * uShadowMatrix * ciModelMatrix ) * pos;
     vScreenCoord    = ciModelViewProjection * vec4(iPositionOrg, 1.0);
