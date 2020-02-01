@@ -1,4 +1,6 @@
-#version 410
+#version 300 es
+precision highp float;
+
 
 in vec4 vColor;
 in vec4 vPosition;

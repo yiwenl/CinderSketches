@@ -1,4 +1,7 @@
-#version 410
+#version 300 es
+
+precision highp float;
+
 
 in vec4 ciPosition;
 in vec3 ciNormal;

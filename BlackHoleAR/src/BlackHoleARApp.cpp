@@ -9,12 +9,16 @@
 #include "cinder/GeomIo.h"
 #include "cinder/Perlin.h"
 #include "cinder/Rand.h"
+#include "cinder/Camera.h"
 #include "cmath"
 
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+const int    FBO_WIDTH = 2048;
+const int    FBO_HEIGHT = 2048;
 
 class BlackHoleARApp : public App {
   public:
@@ -48,10 +52,15 @@ private:
     gl::Texture2dRef        mShadowMapTex;
     gl::TextureRef          mEnvTex;
     
+    CameraPersp             mLightCam;
+    CameraOrtho             mCamParticle;
+    
     vec3                    mLightPos;
     gl::BatchRef            mSphere;
     gl::BatchRef            mEnv;
     Perlin                  mPerlin;
+    
+    mat4                    mMtxModel;
 
     float mSeed = randFloat(1000.0f);
 };
@@ -72,6 +81,14 @@ void prepareSettings( BlackHoleARApp::Settings *settings) {
 
 void BlackHoleARApp::setup()
 {
+    float s = 0.05f;
+    mMtxModel = glm::scale(glm::mat4(1.0f), glm::vec3(s));
+    
+    console() << mMtxModel << endl;
+
+        
+//    console() << "Model Matrix : " << endl;
+//    console() << mMtxModel << endl;
     gl::enableDepthRead();
     gl::enableDepthWrite();
 //    gl::enable( GL_POINT_SPRITE_ARB ); // or use: glEnable
@@ -98,7 +115,7 @@ void BlackHoleARApp::setup()
         float z = randFloat(-zRange, zRange);
         
         float s = mPerlin.fBm(_x, _y, z) * 0.2;
-        r = randFloat(2.0, 2.5) * 0.1;
+        r = randFloat(2.0, 2.5);
         float x = cos(a) * r * ( 1.0 + s);
         float y = sin(a) * r * ( 1.0 + s);
         
@@ -152,6 +169,56 @@ void BlackHoleARApp::setup()
         .attribLocation( "iRandom", 3 )
         .attribLocation( "iLife", 4 )
         );
+    
+    // shadow mapping
+    float scale = 0.02f;
+    mLightPos = vec3( 2.0f * scale, 10.0f * scale, 4.0f * scale);
+    gl::Texture2d::Format depthFormat;
+    depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
+    depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
+    depthFormat.setMagFilter( GL_LINEAR );
+    depthFormat.setMinFilter( GL_LINEAR );
+    depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
+    depthFormat.setCompareFunc( GL_LEQUAL );
+    mShadowMapTex = gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT, depthFormat );
+    
+    gl::Fbo::Format fboFormat;
+    fboFormat.attachment( GL_DEPTH_ATTACHMENT, mShadowMapTex );
+    mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, fboFormat );
+    
+    gl::Fbo::Format fboFormatParticle;
+    mFboParticle = gl::Fbo::create( 64, 64, fboFormatParticle.colorTexture() );
+    
+    gl::Fbo::Format fboFormatEnv;
+    mFboEnv = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, fboFormatEnv.colorTexture() );
+    
+    // Set up camera from the light's viewpoint
+    mLightCam.setPerspective( 100.0f, mFbo->getAspectRatio(), 0.1f, 10.0f );
+    mLightCam.lookAt( mLightPos, vec3( 0.0f ) );
+    
+    
+    
+    //  particle texture
+    mParticleProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particle.vert" ) ).fragment( loadAsset("particle.frag")));
+    auto sphere = gl::VboMesh::create( geom::Icosphere() );
+    mSphere = gl::Batch::create( sphere, mParticleProg );
+    
+    float r = 1.0f;
+    mCamParticle.setOrtho(-r, r, -r, r, .1f, 10.0f);
+    mCamParticle.lookAt(vec3(0.0, 0.0, 5.0f), vec3(0.0, 0.0, 0.0));
+    
+    gl::ScopedFramebuffer fbo( mFboParticle );
+    gl::ScopedViewport viewport( vec2( 0.0f ), mFboParticle->getSize() );
+    
+    gl::clear( Color( 0, 0, 0 ) );
+    gl::setMatrices( mCamParticle );
+    gl::enableDepthRead();
+    gl::enableDepthWrite();
+
+    gl::ScopedGlslProg prog( mParticleProg );
+    mParticleProg->uniform("uLightPos", mLightPos);
+    
+    mSphere->draw();
 }
 
 void BlackHoleARApp::touchesBegan( TouchEvent event )
@@ -184,14 +251,35 @@ void BlackHoleARApp::update()
     std::swap( mSourceIndex, mDestinationIndex );
 }
 
+void BlackHoleARApp::updateShadowMap() {
+    gl::ScopedFramebuffer fbo( mFbo );
+    gl::ScopedViewport viewport( vec2( 0.0f ), mFbo->getSize() );
+    
+    gl::clear( Color( 0, 0, 0 ) );
+    gl::setMatrices( mLightCam );
+    gl::enableDepthRead();
+    gl::enableDepthWrite();
+    gl::setModelMatrix(mMtxModel);
+
+    gl::ScopedGlslProg prog( mRenderProg );
+    
+    mRenderProg->uniform("uViewport", vec2(getWindowSize()));
+    gl::ScopedVao vao( mAttributes[mSourceIndex] );
+    gl::context()->setDefaultShaderVars();
+    gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
+}
+
 void BlackHoleARApp::draw()
 {
+    updateShadowMap();
 	gl::clear( Color( 0, 0, 0 ) );
+    
+    gl::setMatricesWindow( toPixels( getWindowSize() ) );
     
     gl::disableDepthRead();
     gl::disableDepthWrite();
     gl::color( 1.0f, 1.0f, 1.0f, 1.0f );
-    mARSession.drawRGBCaptureTexture( getWindowBounds() );
+    mARSession.drawRGBCaptureTexture( Area(vec2(0.0), getWindowSize()) );
     
     gl::enableDepthRead();
     gl::enableDepthWrite();
@@ -199,12 +287,33 @@ void BlackHoleARApp::draw()
     gl::ScopedMatrices matScp;
     gl::setViewMatrix( mARSession.getViewMatrix() );
     gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
+    gl::setModelMatrix(mMtxModel);
+    
     
     gl::ScopedGlslProg prog( mRenderProg );
+    
+    mat4 shadowMatrix = mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
+    mRenderProg->uniform("uViewport", vec2(getWindowSize()));
+    mRenderProg->uniform("uShadowMatrix", shadowMatrix);
+    
+    gl::ScopedTextureBind texScope( mShadowMapTex, (uint8_t) 0 );
+    mRenderProg->uniform( "uShadowMap", 0 );
+    
+    gl::ScopedTextureBind texScopeParticle( mFboParticle->getColorTexture(), (uint8_t) 1 );
+    mRenderProg->uniform( "uParticleMap", 1 );
+    
+//    gl::ScopedTextureBind texScopeEnv( mFboEnv->getColorTexture(), (uint8_t) 2 );
+//    mRenderProg->uniform( "uEnvMap", 2 );
     
     gl::ScopedVao vao( mAttributes[mSourceIndex] );
     gl::context()->setDefaultShaderVars();
     gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
+    
+    
+    gl::setMatricesWindow( toPixels( getWindowSize() ) );
+    int s = 128 * 2;
+    gl::draw( mFbo->getDepthTexture(), Rectf( 0, 0, s, s ) );
+
 }
 
 CINDER_APP( BlackHoleARApp, RendererGl( RendererGl::Options().msaa( 4 ) ), prepareSettings )
