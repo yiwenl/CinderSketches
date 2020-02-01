@@ -90,18 +90,21 @@ void main( void )
     vec2 uv = gl_PointCoord;
     uv.y = 1.0 - uv.y;
     vec4 finalColor = texture(uParticleMap, uv);
+    
 
     // shadow mapping
     vec4 sc    = vShadowCoord / vShadowCoord.w;
-    // float shadow        = samplePCF4x4( sc );
     float shadow    = PCFShadow(uShadowMap, uMapSize, sc);
-	shadow          = mix(shadow, 1.0, .25);
+	shadow          = mix(shadow, 1.0, .5);
 
-
+    // background
+    vec2 screenUV = vScreenCoord.xy / vScreenCoord.w * .5 + .5;
+    vec4 colorEnv = texture(uEnvMap, screenUV);
 
     // color composite
-    finalColor.rgb *= shadow * brOffset;
+    finalColor.rgb *= shadow * brOffset * colorEnv.rgb;
 
 
     oColor = finalColor;
+
 }

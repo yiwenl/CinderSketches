@@ -256,6 +256,8 @@ void BlackHoleARApp::updateShadowMap() {
     gl::ScopedViewport viewport( vec2( 0.0f ), mFbo->getSize() );
     
     gl::clear( Color( 0, 0, 0 ) );
+    gl::ScopedMatrices matScp;
+    
     gl::setMatrices( mLightCam );
     gl::enableDepthRead();
     gl::enableDepthWrite();
@@ -269,27 +271,43 @@ void BlackHoleARApp::updateShadowMap() {
     gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
 }
 
+
+void BlackHoleARApp::updateEnvMap() {
+    gl::ScopedFramebuffer fbo( mFboEnv );
+    gl::ScopedViewport viewport( vec2( 0.0f ), mFboEnv->getSize() );
+    gl::clear( Color( 0, 0, 0 ) );
+    
+    gl::ScopedMatrices matScp;
+    
+//    mARSession.drawRGBCaptureTexture( Area(vec2( 0.0f ), mFboEnv->getSize()) );
+    mARSession.drawRGBCaptureTexture(getWindowBounds());
+    
+}
+
 void BlackHoleARApp::draw()
 {
+    updateEnvMap();
     updateShadowMap();
 	gl::clear( Color( 0, 0, 0 ) );
     
-    gl::setMatricesWindow( toPixels( getWindowSize() ) );
+    
+    gl::ScopedMatrices matScp;
     
     gl::disableDepthRead();
     gl::disableDepthWrite();
-    gl::color( 1.0f, 1.0f, 1.0f, 1.0f );
-    mARSession.drawRGBCaptureTexture( Area(vec2(0.0), getWindowSize()) );
     
+    gl::setMatricesWindow( toPixels( getWindowSize() ) );
+    gl::draw( mFboEnv->getColorTexture(), Rectf( 0, 0, getWindowWidth() * 2, getWindowHeight() * 2 ) );
+
     gl::enableDepthRead();
     gl::enableDepthWrite();
     
-    gl::ScopedMatrices matScp;
+//    gl::ScopedMatrices matScp;
     gl::setViewMatrix( mARSession.getViewMatrix() );
     gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
     gl::setModelMatrix(mMtxModel);
     
-    
+
     gl::ScopedGlslProg prog( mRenderProg );
     
     mat4 shadowMatrix = mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
@@ -302,17 +320,17 @@ void BlackHoleARApp::draw()
     gl::ScopedTextureBind texScopeParticle( mFboParticle->getColorTexture(), (uint8_t) 1 );
     mRenderProg->uniform( "uParticleMap", 1 );
     
-//    gl::ScopedTextureBind texScopeEnv( mFboEnv->getColorTexture(), (uint8_t) 2 );
-//    mRenderProg->uniform( "uEnvMap", 2 );
+    gl::ScopedTextureBind texScopeEnv( mFboEnv->getColorTexture(), (uint8_t) 2 );
+    mRenderProg->uniform( "uEnvMap", 2 );
     
     gl::ScopedVao vao( mAttributes[mSourceIndex] );
     gl::context()->setDefaultShaderVars();
     gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
+
     
-    
-    gl::setMatricesWindow( toPixels( getWindowSize() ) );
-    int s = 128 * 2;
-    gl::draw( mFbo->getDepthTexture(), Rectf( 0, 0, s, s ) );
+//    gl::setMatricesWindow( toPixels( getWindowSize() ) );
+//    int s = 128 * 2;
+//    gl::draw( mFbo->getDepthTexture(), Rectf( 0, 0, s, s ) );
 
 }
 
