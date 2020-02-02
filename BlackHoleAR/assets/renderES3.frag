@@ -100,14 +100,18 @@ void main( void )
     // shadow mapping
     vec4 sc    = vShadowCoord / vShadowCoord.w;
     float shadow    = PCFShadow(uShadowMap, uMapSize, sc);
-	shadow          = mix(shadow, 1.0, .5);
+	shadow          = mix(shadow, 1.0, .4);
 
     // background
     vec2 screenUV = vScreenCoord.xy / vScreenCoord.w * .5 + .5;
     vec4 colorEnv = texture(uEnvMap, screenUV);
+    float t = smoothstep(0.0, 0.5, vLife);
+    colorEnv.rgb = mix(vec3(1.0), colorEnv.rgb, t);
+
+    float br = mix(1.0, 1.5, vLife);
 
     // color composite
-    finalColor.rgb *= shadow * brOffset * colorEnv.rgb;
+    finalColor.rgb *= shadow * br * colorEnv.rgb;
 
 
     oColor = finalColor;

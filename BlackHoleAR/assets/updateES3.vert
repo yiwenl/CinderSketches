@@ -16,6 +16,7 @@ out float life;
 
 uniform float uTime;
 uniform float uOffset;
+uniform float uIsClosing;
 
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0;  }
 vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0;  }
@@ -143,6 +144,15 @@ vec3 rotate(vec3 v, vec3 axis, float angle) {
 	return (m * vec4(v, 1.0)).xyz;
 }
 
+float exponentialInOut(float t) {
+  return t == 0.0 || t == 1.0
+    ? t
+    : t < 0.5
+      ? +0.5 * pow(2.0, (20.0 * t) - 10.0)
+      : -0.5 * pow(2.0, 10.0 - (t * 20.0)) + 1.0;
+}
+
+
 
 #define PI 3.141592653
 
@@ -174,16 +184,26 @@ void main()
 
     float speedOffset = mix(0.95, 1.0, iRandom.z);
 
-    vel += acc * 0.003 * speedOffset * uOffset;
+    float offset = smoothstep(0.0, 1.0, uOffset * 2.0 - iRandom.x);
+    offset = exponentialInOut(offset);
+
+    vel += acc * 0.003 * speedOffset * offset;
     pos += vel;
     vel *= 0.9;
     
     life = iLife - mix(0.01, 0.02, random.x);
     
     if(life < 0.0f) {
-        life = 1.0;
-        pos = iPositionOrg;
-        vel *= 0.0;
+
+        if(uIsClosing < 0.5) {
+            life = 1.0;
+            pos = iPositionOrg;
+            vel *= 0.0;
+        } else {
+            life = 0.0;
+            vel *= 0.9;
+        }
+        
     }
 
 

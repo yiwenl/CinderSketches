@@ -28,17 +28,28 @@ const mat4 biasMatrix = mat4( 0.5, 0.0, 0.0, 0.0,
 
 const float radius = 0.003;
 
+float exponentialInOut(float t) {
+  return t == 0.0 || t == 1.0
+    ? t
+    : t < 0.5
+      ? +0.5 * pow(2.0, (20.0 * t) - 10.0)
+      : -0.5 * pow(2.0, 10.0 - (t * 20.0)) + 1.0;
+}
+
 void main( void )
 {
 	vec4 pos = ciPosition;
 	// gl_Position	= ciModelViewProjection * uTranslateMatrix * pos;
 	gl_Position	= ciProjectionMatrix * ciViewMatrix * uTranslateMatrix * ciModelMatrix * pos;
     color = vec3(1.0);
+
+    float offset = smoothstep(0.0, 1.0, uOffset * 2.0 - iRandom.x);
+    offset = exponentialInOut(offset);
     
     float distOffset = uViewport.y * ciProjectionMatrix[1][1] * radius / gl_Position.w;
     float scale = mix(0.5, 1.0, iRandom.x);
     float lifeScale = smoothstep(0.5, 0.4, abs(iLife - 0.5));
-    gl_PointSize = distOffset * lifeScale * scale * uOffset;
+    gl_PointSize = distOffset * lifeScale * scale * offset;
     
     vShadowCoord    = ( biasMatrix * uShadowMatrix * ciModelMatrix ) * pos;
     vScreenCoord    = uTouchMatrix * uTranslateMatrix * ciModelMatrix * vec4(iPositionOrg, 1.0);

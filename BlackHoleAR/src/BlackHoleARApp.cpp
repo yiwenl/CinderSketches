@@ -222,16 +222,34 @@ void BlackHoleARApp::setup()
 
 void BlackHoleARApp::touchesBegan( TouchEvent event )
 {
-    console() << " Touch " << endl;
-    mARSession.addAnchorRelativeToCamera( vec3(0.0f, 0.0f, -0.5f) );
     
-    targetOffset = 1.0;
+    mARSession.addAnchorRelativeToCamera( vec3(0.0f, 0.0f, -1.0f) );
+    
+    
+    targetOffset += 1.0;
+    
+    // next step : reset
+    if(targetOffset > 2.0) {
+        auto anchors = mARSession.getAnchors();
+        console() << anchors.size() << endl;
+        while( anchors.size() > 1) {
+            anchors.erase(anchors.begin());
+            console() << anchors.size() << endl;
+        }
+        offset = 0.0f;
+        targetOffset = 1.0;
+    }
 }
 
 void BlackHoleARApp::update()
 {
     
-    offset += (targetOffset - offset) * 0.05;
+    if(targetOffset > 0.5) {
+        offset += 0.005f;
+        if(offset > 1.0) {
+            offset = 1.0;
+        }
+    }
     // Update particles on the GPU
     gl::ScopedGlslProg prog( mUpdateProg );
     gl::ScopedState rasterizer( GL_RASTERIZER_DISCARD, true );    // turn off fragment stage
@@ -239,6 +257,9 @@ void BlackHoleARApp::update()
     // mUpdateProg->uniform("uCenter", getWindowCenter());
     mUpdateProg->uniform("uTime", float(getElapsedSeconds()) + mSeed);
     mUpdateProg->uniform("uOffset", offset);
+    float t =(targetOffset > 1.0f) ? 1.0f : 0.0f;
+    mUpdateProg->uniform("uIsClosing", t);
+    
 
     // Bind the source data (Attributes refer to specific buffers).
     gl::ScopedVao source( mAttributes[mSourceIndex] );
