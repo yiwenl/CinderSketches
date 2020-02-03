@@ -37,6 +37,7 @@ private:
     gl::GlslProgRef mUpdateProg;
     gl::GlslProgRef mParticleProg;
     gl::GlslProgRef mEnvProg;
+    gl::GlslProgRef mFloorProg;
     
     // Descriptions of particle data layout.
     gl::VaoRef          mAttributes[2];
@@ -58,11 +59,14 @@ private:
     vec3                    mLightPos;
     gl::BatchRef            mSphere;
     gl::BatchRef            mEnv;
+    gl::BatchRef            mFloor;
     Perlin                  mPerlin;
     
     mat4                    mMtxScale;
     mat4                    mMtxTouch;
     mat4                    mMtxIdentity;
+    mat4                    mMtxModel;
+    ARKit::AnchorID         aID;
     
 
     float mSeed = randFloat(1000.0f);
@@ -87,7 +91,7 @@ void prepareSettings( BlackHoleARApp::Settings *settings) {
 
 void BlackHoleARApp::setup()
 {
-    float s = 0.05f;
+    float s = 0.1f;
     mMtxScale = glm::scale(glm::mat4(1.0f), glm::vec3(s));
     
     gl::enableDepthRead();
@@ -170,8 +174,8 @@ void BlackHoleARApp::setup()
         );
     
     // shadow mapping
-    float scale = 0.02f;
-    mLightPos = vec3( 2.0f * scale, 10.0f * scale, 4.0f * scale);
+    float scale = 0.035f;
+    mLightPos = vec3( 0.0f * scale, 10.0f * scale, 4.0f * scale);
     gl::Texture2d::Format depthFormat;
     depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
     depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
@@ -195,7 +199,10 @@ void BlackHoleARApp::setup()
     mLightCam.setPerspective( 100.0f, mFbo->getAspectRatio(), 0.1f, 10.0f );
     mLightCam.lookAt( mLightPos, vec3( 0.0f ) );
     
-    
+    // floor
+    mFloorProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "floor.vert" ) ).fragment( loadAsset("floor.frag")));
+    auto plane = gl::VboMesh::create( geom::Plane().size(vec2(10.0f)));
+    mFloor = gl::Batch::create(plane, mFloorProg);
     
     //  particle texture
     mParticleProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particle.vert" ) ).fragment( loadAsset("particle.frag")));
@@ -222,9 +229,8 @@ void BlackHoleARApp::setup()
 
 void BlackHoleARApp::touchesBegan( TouchEvent event )
 {
-    
-    mARSession.addAnchorRelativeToCamera( vec3(0.0f, 0.0f, -1.0f) );
-    
+    aID = mARSession.addAnchorRelativeToCamera( vec3(0.0f, 0.0f, -2.0f) );
+    console() << aID << endl;
     
     targetOffset += 1.0;
     
@@ -239,6 +245,7 @@ void BlackHoleARApp::touchesBegan( TouchEvent event )
         offset = 0.0f;
         targetOffset = 1.0;
     }
+    
 }
 
 void BlackHoleARApp::update()
@@ -344,6 +351,8 @@ void BlackHoleARApp::draw()
     auto anchors = mARSession.getAnchors();
     auto anchor = anchors[0];
     
+    
+    
     gl::enableDepthRead();
     gl::enableDepthWrite();
     
@@ -372,6 +381,18 @@ void BlackHoleARApp::draw()
     gl::ScopedVao vao( mAttributes[mSourceIndex] );
     gl::context()->setDefaultShaderVars();
     gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
+    
+    
+    gl::setViewMatrix( mARSession.getViewMatrix() );
+    gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
+    gl::setModelMatrix(mMtxScale);
+    
+        
+    
+//    gl::setMatricesWindow( toPixels( getWindowSize() ) );
+//    int s = 128 * 2;
+//    gl::draw( mFbo->getDepthTexture(), Rectf( 0, 0, s, s ) );
+    
 }
 
 CINDER_APP( BlackHoleARApp, RendererGl( RendererGl::Options().msaa( 4 ) ), prepareSettings )

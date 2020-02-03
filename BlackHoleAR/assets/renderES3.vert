@@ -26,7 +26,7 @@ const mat4 biasMatrix = mat4( 0.5, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.5, 0.0,
                                 0.5, 0.5, 0.5, 1.0 );
 
-const float radius = 0.003;
+const float radius = 0.005;
 
 float exponentialInOut(float t) {
   return t == 0.0 || t == 1.0
