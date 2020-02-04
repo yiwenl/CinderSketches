@@ -22,6 +22,7 @@
 		63C39B80D63644A599354C11 /* CinderARKit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0DBC935859E47A599E8F988 /* CinderARKit.cpp */; };
 		966873D7E0AF44C2B4CAA8C8 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6AB96B4F57674D6C81F70819 /* LaunchScreen.xib */; };
 		BBC269D723E9C57200A8A2AB /* assets in Resources */ = {isa = PBXBuildFile; fileRef = BBC269D623E9C57200A8A2AB /* assets */; };
+		BBC269DC23EA257200A8A2AB /* Config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBC269DA23EA257200A8A2AB /* Config.cpp */; };
 		C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02B121B400300192073 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C725E000121DAC8F00FA186B /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8FFFFA18FF /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091FFFF /* ImageIO.framework */; };
@@ -51,6 +52,8 @@
 		6AE3593A3D2742F8B33388F5 /* ARAnchorTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ARAnchorTypes.h; path = "../blocks/Cinder-ARKit/include/ARAnchorTypes.h"; sourceTree = "<group>"; };
 		76AF084AB4C54106B2BD9E27 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		BBC269D623E9C57200A8A2AB /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
+		BBC269DA23EA257200A8A2AB /* Config.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Config.cpp; path = ../src/Config.cpp; sourceTree = "<group>"; };
+		BBC269DB23EA257200A8A2AB /* Config.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Config.hpp; path = ../src/Config.hpp; sourceTree = "<group>"; };
 		C2608AC2793E4BA79A2E3A8E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C725E000121DAC8F00FA186B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		C727C02B121B400300192073 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -135,6 +138,8 @@
 			isa = PBXGroup;
 			children = (
 				31B2F2892A734C129898618A /* MushroomsARApp.cpp */,
+				BBC269DA23EA257200A8A2AB /* Config.cpp */,
+				BBC269DB23EA257200A8A2AB /* Config.hpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -268,6 +273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				214F0C1E5D274990878E23BA /* MushroomsARApp.cpp in Sources */,
+				BBC269DC23EA257200A8A2AB /* Config.cpp in Sources */,
 				63C39B80D63644A599354C11 /* CinderARKit.cpp in Sources */,
 				1760F8E2A6A6453ABF43020E /* ARSessionImpl.mm in Sources */,
 			);
