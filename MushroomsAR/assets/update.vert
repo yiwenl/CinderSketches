@@ -16,7 +16,6 @@ out float life;
 
 uniform float uTime;
 uniform float uOffset;
-uniform float uIsClosing;
 
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0;  }
 vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0;  }
@@ -84,7 +83,6 @@ float snoise(float x, float y, float z){
     return snoise(vec3(x, y, z));
 }
 
-
 vec3 snoiseVec3( vec3 x ){
 
     float s  = snoise(vec3( x ));
@@ -94,7 +92,6 @@ vec3 snoiseVec3( vec3 x ){
     return c;
 
 }
-
 
 vec3 curlNoise( vec3 p ){
     
@@ -120,93 +117,42 @@ vec3 curlNoise( vec3 p ){
 }
 
 
-vec2 rotate(vec2 v, float a) {
-	float s = sin(a);
-	float c = cos(a);
-	mat2 m = mat2(c, s, -s, c);
-	return m * v;
-}
-
-mat4 rotationMatrix(vec3 axis, float angle) {
-    axis = normalize(axis);
-    float s = sin(angle);
-    float c = cos(angle);
-    float oc = 1.0 - c;
-    
-    return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
-                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
-                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
-                0.0,                                0.0,                                0.0,                                1.0);
-}
-
-vec3 rotate(vec3 v, vec3 axis, float angle) {
-	mat4 m = rotationMatrix(axis, angle);
-	return (m * vec4(v, 1.0)).xyz;
-}
-
-float exponentialInOut(float t) {
-  return t == 0.0 || t == 1.0
-    ? t
-    : t < 0.5
-      ? +0.5 * pow(2.0, (20.0 * t) - 10.0)
-      : -0.5 * pow(2.0, 10.0 - (t * 20.0)) + 1.0;
-}
-
-
-
 #define PI 3.141592653
 
 void main()
 {
     vec3 pos    = iPosition;
     vec3 vel    = iVelocity;
+    positionOrg     = iPositionOrg;
+    random          = iRandom;
 
-    positionOrg = iPositionOrg;
-    random      = iRandom;
-    
-    float f;
+
     vec3 acc = vec3(0.0);
-    acc.z -= 2.0;
-    float posOffset = snoise(pos * 0.5 + iRandom * 0.01 + uTime * 0.5) * .5 + .5;
+    float posScale = 5.0;
+    float posOffset = snoise(pos * 0.5 * posScale + iRandom * 0.01 * posScale + uTime * 0.5) * .5 + .5;
     posOffset = mix(0.1, 1.0, posOffset) * 1.5;
-    vec3 noise = curlNoise(pos * posOffset + uTime * 0.5);
-    noise.z = noise.z * .5 + 0.5;
-    noise.z *= 3.0;
-    vec3 forceGravity = normalize(pos);
+    vec3 noise = curlNoise(pos * posOffset * posScale + uTime * 0.5);
+    noise.z = -(noise.z * 0.5 + 0.5);
 
-    vec3 forceRotate = normalize(pos * vec3(1.0, 1.0, 0.0));
-    forceRotate.xy = rotate(forceRotate.xy, PI * 0.7);
+    acc.z -= 1.0;
+    acc += noise;
 
-    acc -= forceGravity;
-    acc += forceRotate * 0.75;
-    acc += noise * 0.5;
-
-
-    float speedOffset = mix(0.95, 1.0, iRandom.z);
-
-    float offset = smoothstep(0.0, 1.0, uOffset * 2.0 - iRandom.x);
-    offset = exponentialInOut(offset);
-
-    vel += acc * 0.003 * speedOffset * offset;
+    vel += acc * 0.0001 * uOffset;
     pos += vel;
-    vel *= 0.9;
-    
+
+    vel *= 0.95;
+
     life = iLife - mix(0.01, 0.02, random.x);
     
     if(life < 0.0f) {
-
-        if(uIsClosing < 0.5) {
-            life = 1.0;
-            pos = iPositionOrg;
-            vel *= 0.0;
-        } else {
-            life = 0.0;
-            vel *= 0.9;
-        }
-        
+        life = 1.0;
+        pos = iPositionOrg;
+        vel *= 0.0;
     }
 
-
-    position = pos;
-    velocity = vel;
+    
+    position        = pos;
+    velocity        = vel;
+    
+    
 }

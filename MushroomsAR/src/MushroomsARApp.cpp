@@ -16,13 +16,15 @@ const int    FBO_HEIGHT = 2048;
 class MushroomsARApp : public App {
   public:
 	void setup() override;
-	void mouseDown( MouseEvent event ) override;
+	void touchesBegan( TouchEvent event ) override;
 	void update() override;
 	void draw() override;
     
     ARKit::Session     mARSession;
     
     gl::Texture2dRef   mTexture;
+    gl::Texture2dRef   mTextureParticle;
+    gl::Texture2dRef   mShadowMapTex;
     
     gl::BatchRef        mBox;
     gl::GlslProgRef     mShaderColor;
@@ -45,10 +47,13 @@ class MushroomsARApp : public App {
     vec3                mLightPos;
     
     float               mSeed = randFloat(1000.0f);
+    float               mOffset = 0.0;
+    float               mTargetOffset = 0.0;
     
 private:
     void updateShadowMap();
     void initParticles();
+    void initShadowMap();
     
 };
 
@@ -75,17 +80,16 @@ void MushroomsARApp::setup()
     
     // This texture is just used for visualisation
     mTexture = gl::Texture2d::create( loadImage( loadAsset( "image.jpg" )));
+    mTextureParticle = gl::Texture2d::create( loadImage( loadAsset( "particle.png" )));
     
     
-    mShaderColor = gl::GlslProg::create( loadAsset( "basic.vert" ), loadAsset( "color.frag" ) );
-    float ratio = (float)mTexture->getWidth() / (float)mTexture->getHeight();
-    console() << "Image Ratio : " << ratio << endl;
-    // scale : 0.2
-    auto box = gl::VboMesh::create( geom::Cube().size(1.0f, 1.0f, 0.1f) );
-    mBox = gl::Batch::create(box, mShaderColor);
+//    mShaderColor = gl::GlslProg::create( loadAsset( "basic.vert" ), loadAsset( "color.frag" ) );
+//    auto box = gl::VboMesh::create( geom::Cube().size(1.0f, 1.0f, 1.0f) );
+//    mBox = gl::Batch::create(box, mShaderColor);
     
     
     initParticles();
+    initShadowMap();
 }
 
 void MushroomsARApp::initParticles() {
@@ -95,7 +99,7 @@ void MushroomsARApp::initParticles() {
     particles.assign( Config::getInstance().NUM_PARTICLES, Particle() );
     float ratio = (float)mTexture->getWidth() / (float)mTexture->getHeight();
     float rangeX = 0.1;
-    float rangeY = 0.294/2.0;
+    float rangeY = rangeX/ ratio;
     float rangeZ = .01;
     
     
@@ -158,16 +162,95 @@ void MushroomsARApp::initParticles() {
         );
 }
 
-void MushroomsARApp::mouseDown( MouseEvent event )
+void MushroomsARApp::initShadowMap() {
+    // shadow mapping
+    
+    float scale = 0.035f;
+    mLightPos = vec3( 0.0f, 10.0f * scale, 2.0f * scale);
+    console() << "Light Position : " << mLightPos << endl;
+    
+    gl::Texture2d::Format depthFormat;
+    depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
+    depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
+    depthFormat.setMagFilter( GL_LINEAR );
+    depthFormat.setMinFilter( GL_LINEAR );
+    depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
+    depthFormat.setCompareFunc( GL_LEQUAL );
+    mShadowMapTex = gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT, depthFormat );
+    
+    gl::Fbo::Format fboFormat;
+    fboFormat.attachment( GL_DEPTH_ATTACHMENT, mShadowMapTex );
+    mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, fboFormat );
+    
+    // Set up camera from the light's viewpoint
+    mCamLight.setPerspective( 100.0f, mFbo->getAspectRatio(), 0.1f, 2.0f );
+    mCamLight.lookAt( mLightPos, vec3( 0.0f ) );
+    
+}
+
+void MushroomsARApp::touchesBegan( TouchEvent event )
 {
+    mTargetOffset = 1.0;
 }
 
 void MushroomsARApp::update()
 {
+    mOffset += (mTargetOffset - mOffset) * 0.05;
+    // Update particles on the GPU
+    gl::ScopedGlslProg prog( mShaderUpdate );
+    gl::ScopedState rasterizer( GL_RASTERIZER_DISCARD, true );    // turn off fragment stage
+
+    mShaderUpdate->uniform("uTime", float(getElapsedSeconds()) * 0.5f + mSeed);
+    mShaderUpdate->uniform("uOffset", mOffset);
+    
+    // Bind the source data (Attributes refer to specific buffers).
+    gl::ScopedVao source( mAttributes[mSourceIndex] );
+    // Bind destination as buffer base.
+    gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 0, mParticleBuffer[mDestinationIndex] );
+    gl::beginTransformFeedback( GL_POINTS );
+
+    // Draw source into destination, performing our vertex transformations.
+    gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
+
+    gl::endTransformFeedback();
+
+    // Swap source and destination for next loop
+    std::swap( mSourceIndex, mDestinationIndex );
+}
+
+void MushroomsARApp::updateShadowMap() {
+    gl::enableDepthRead();
+    gl::enableDepthWrite();
+    
+    gl::ScopedFramebuffer fbo( mFbo );
+    gl::ScopedViewport viewport( vec2( 0.0f ), mFbo->getSize() );
+    
+    gl::clear( Color( 1, 1, 0 ) );
+    gl::ScopedMatrices matScp;
+    
+    gl::setMatrices( mCamLight );
+    gl::enableDepthRead();
+    gl::enableDepthWrite();
+
+    gl::ScopedGlslProg prog( mShaderRender );
+    mShaderRender->uniform("uOffset", mOffset);
+    mShaderRender->uniform("uViewport", vec2(getWindowSize()));
+    gl::ScopedTextureBind texMap( mTexture, (uint8_t) 0 );
+    mShaderRender->uniform( "uColorMap", 0 );
+    
+    gl::ScopedTextureBind texParticle( mTextureParticle, (uint8_t) 1 );
+    mShaderRender->uniform( "uParticleMap", 1 );
+    
+    gl::ScopedVao vao( mAttributes[mSourceIndex] );
+    gl::context()->setDefaultShaderVars();
+    gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
+    
 }
 
 void MushroomsARApp::draw()
 {
+    updateShadowMap();
+    
     gl::disableDepthRead();
     gl::disableDepthWrite();
     gl::clear( Color( 0, 0, 0 ) );
@@ -181,39 +264,41 @@ void MushroomsARApp::draw()
     gl::ScopedMatrices matScp;
     gl::setViewMatrix( mARSession.getViewMatrix() );
     gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
-
-    gl::ScopedGlslProg glslProg( mShaderColor );
-    mShaderColor->uniform("uColor", vec3(1.0));
-       
+   
        
     for (const auto& a : mARSession.getImageAnchors())
     {
         gl::ScopedMatrices matScp;
         gl::setModelMatrix( a.mTransform );
-        mShaderColor->uniform("uSize", a.mPhysicalSize);
-
         gl::rotate( (float)M_PI * 0.5f, vec3(1,0,0) ); // Make it parallel with the ground
         
-//        mBox->draw();
-        
         gl::ScopedGlslProg progRender( mShaderRender );
-        mShaderRender->uniform("uViewport", vec2(getWindowSize()));
+        mat4 shadowMatrix = mCamLight.getProjectionMatrix() * mCamLight.getViewMatrix();
+        mShaderRender->uniform("uShadowMatrix", shadowMatrix);
+        mShaderRender->uniform("uOffset", mOffset);
+        
+        mShaderRender->uniform( "uViewport", vec2(getWindowSize()));
         
         gl::ScopedTextureBind texMap( mTexture, (uint8_t) 0 );
         mShaderRender->uniform( "uColorMap", 0 );
         
+        gl::ScopedTextureBind texParticle( mTextureParticle, (uint8_t) 1 );
+        mShaderRender->uniform( "uParticleMap", 1 );
+        
+        gl::ScopedTextureBind texShadow( mShadowMapTex, (uint8_t) 2 );
+        mShaderRender->uniform( "uShadowMap", 2 );
+        
         gl::ScopedVao vao( mAttributes[mSourceIndex] );
         gl::context()->setDefaultShaderVars();
         gl::drawArrays( GL_POINTS, 0, Config::getInstance().NUM_PARTICLES );
-        
-
-    /* a.mImageName will allow to decide what AR content to show, attached to this anchor*/
     }
+   
     
-    gl::setMatricesWindow( toPixels( getWindowSize() ) );
-    int s = 128 * 2;
-    float ratio = (float)mTexture->getHeight() / (float)mTexture->getWidth();
-    gl::draw( mTexture, Rectf( 0, 0, s, s * ratio ) );
+    
+//    gl::setMatricesWindow( toPixels( getWindowSize() ) );
+//    int s = 128 * 2;
+//    gl::draw( mFbo->getDepthTexture(), Rectf( 0, 100, s, s+100 ) );
+//    gl::draw( mFbo->getColorTexture(), Rectf( s, 100, s * 2, s+100 ) );
 }
 
 CINDER_APP( MushroomsARApp, RendererGl )

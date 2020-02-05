@@ -10,6 +10,7 @@ uniform mat4    uTouchMatrix;
 uniform vec2    uViewport;
 uniform vec2    uSize;
 uniform sampler2D uColorMap;
+uniform float   uOffset;
 
 in vec4			ciPosition;
 in vec3			iPositionOrg;
@@ -25,13 +26,13 @@ const mat4 biasMatrix = mat4( 0.5, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.5, 0.0,
                                 0.5, 0.5, 0.5, 1.0 );
 
-const float radius = 0.005;
+const float radius = 0.0035;
 
 
 void main( void )
 {
 	gl_Position	= ciModelViewProjection * ciPosition;
-    vShadowCoord    = ( biasMatrix * uShadowMatrix * ciModelMatrix ) * ciPosition;
+    vShadowCoord    = ( biasMatrix * uShadowMatrix ) * ciPosition;
 
     
     vec2 uv = iPositionOrg.xy / uSize * .5 + .5;
@@ -45,7 +46,7 @@ void main( void )
     float distOffset = uViewport.y * ciProjectionMatrix[1][1] * radius / gl_Position.w;
     float scale = mix(0.5, 1.0, iRandom.x);
     float lifeScale = smoothstep(0.5, 0.4, abs(iLife - 0.5));
-    gl_PointSize = distOffset * lifeScale * scale * colorScale;
+    gl_PointSize = distOffset * lifeScale * scale * colorScale * uOffset;
     
     
     vLife = iLife;

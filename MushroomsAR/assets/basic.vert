@@ -15,8 +15,7 @@ varying highp vec2	TexCoord0;
 
 void main( void )
 {
-    vec4 pos = ciPosition;
-    pos.xyz *= uSize.xyx;
+  vec4 pos = ciPosition;
 	gl_Position	= ciModelViewProjection * pos;
 	TexCoord0 	= ciTexCoord0;
 	Normal		= ciNormalMatrix * ciNormal;
