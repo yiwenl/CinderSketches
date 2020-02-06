@@ -3,6 +3,7 @@
 #include "cinder/gl/gl.h"
 #include "CinderARKit.h"
 #include "BatchBall.hpp"
+#include "BatchGridDots.hpp"
 
 using namespace ci;
 using namespace ci::app;
@@ -18,7 +19,8 @@ class PixelatedApp : public App {
     
     ARKit::Session mARSession;
     
-    BatchBallRef      mBall;
+    BatchBallRef        mBall;
+    BatchGridDotsRef    mGrid;
 };
 
 void PixelatedApp::setup()
@@ -31,6 +33,7 @@ void PixelatedApp::setup()
     
     
     mBall = BatchBall::create();
+    mGrid = BatchGridDots::create();
 }
 
 void PixelatedApp::touchesBegan( TouchEvent event )
@@ -57,7 +60,9 @@ void PixelatedApp::draw()
     gl::setViewMatrix( mARSession.getViewMatrix() );
     gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
     
-    mBall->draw(vec3(0.0), vec3(0.005f), vec3(1.0, 0.0, 0.0));
+    
+    mGrid->draw(0.1f);
+    mBall->draw(vec3(0.0, 0.0, -0.1), vec3(0.005f), vec3(1.0, 0.0, 0.0));
 }
 
 CINDER_APP( PixelatedApp, RendererGl )
