@@ -22,6 +22,7 @@
 		81487331359D4C49B8063A59 /* CinderARKit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E25FBEB62B6477E91C6671F /* CinderARKit.cpp */; };
 		93E8EDDE082345F3B878EAF6 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFFE4B1199340DCBDBBE76E /* ARKit.framework */; };
 		B7147C2C8FAB41DDBBA46E05 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0D2BE0639F5409FAECA9519 /* Images.xcassets */; };
+		BBEBA6B523ECD9B7008B0E35 /* BatchAxis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBEBA6B323ECD9B7008B0E35 /* BatchAxis.cpp */; };
 		C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02B121B400300192073 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C725E000121DAC8F00FA186B /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8FFFFA18FF /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091FFFF /* ImageIO.framework */; };
@@ -54,6 +55,8 @@
 		A39F23F3E5C848FA8A3DA4DF /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		BBEBA6AB23ECC4E0008B0E35 /* BatchBall.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = BatchBall.hpp; path = ../src/BatchBall.hpp; sourceTree = "<group>"; };
 		BBEBA6B123ECD1E6008B0E35 /* BatchGridDots.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = BatchGridDots.hpp; path = ../src/BatchGridDots.hpp; sourceTree = "<group>"; };
+		BBEBA6B323ECD9B7008B0E35 /* BatchAxis.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BatchAxis.cpp; path = ../src/BatchAxis.cpp; sourceTree = "<group>"; };
+		BBEBA6B423ECD9B7008B0E35 /* BatchAxis.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = BatchAxis.hpp; path = ../src/BatchAxis.hpp; sourceTree = "<group>"; };
 		C725E000121DAC8F00FA186B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		C727C02B121B400300192073 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		C727C02D121B400300192073 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -136,6 +139,8 @@
 				26B46343886848F0AB4E9671 /* PixelatedApp.cpp */,
 				BBEBA6AB23ECC4E0008B0E35 /* BatchBall.hpp */,
 				BBEBA6B123ECD1E6008B0E35 /* BatchGridDots.hpp */,
+				BBEBA6B323ECD9B7008B0E35 /* BatchAxis.cpp */,
+				BBEBA6B423ECD9B7008B0E35 /* BatchAxis.hpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -268,6 +273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				566004DDBEF24CC78B2423C3 /* PixelatedApp.cpp in Sources */,
+				BBEBA6B523ECD9B7008B0E35 /* BatchAxis.cpp in Sources */,
 				81487331359D4C49B8063A59 /* CinderARKit.cpp in Sources */,
 				746270B4B0BC4D3A9526A37C /* ARSessionImpl.mm in Sources */,
 			);

@@ -4,6 +4,7 @@
 #include "CinderARKit.h"
 #include "BatchBall.hpp"
 #include "BatchGridDots.hpp"
+#include "BatchAxis.hpp"
 
 using namespace ci;
 using namespace ci::app;
@@ -21,6 +22,7 @@ class PixelatedApp : public App {
     
     BatchBallRef        mBall;
     BatchGridDotsRef    mGrid;
+    BatchAxisRef        mAxis;
 };
 
 void PixelatedApp::setup()
@@ -34,6 +36,7 @@ void PixelatedApp::setup()
     
     mBall = BatchBall::create();
     mGrid = BatchGridDots::create();
+    mAxis = BatchAxis::create();
 }
 
 void PixelatedApp::touchesBegan( TouchEvent event )
@@ -60,7 +63,7 @@ void PixelatedApp::draw()
     gl::setViewMatrix( mARSession.getViewMatrix() );
     gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
     
-    
+    mAxis->draw();
     mGrid->draw(0.1f);
     mBall->draw(vec3(0.0, 0.0, -0.1), vec3(0.005f), vec3(1.0, 0.0, 0.0));
 }
