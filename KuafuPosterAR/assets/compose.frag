@@ -5,6 +5,7 @@ precision highp float;
 uniform vec3 uColor;
 uniform sampler2D uMap;
 uniform sampler2D uMaskMap;
+uniform float uState;
 
 varying highp vec2 TexCoord0;
 
@@ -22,5 +23,15 @@ void main( void )
 	// color.rgb *= mix(mask, 1.0, .5);
 	color.a *= mask;
 
-	gl_FragColor = color;
+	
+    
+    if(uState < 1.5) {
+        gl_FragColor = color;
+    } else if (uState < 2.5) {
+        gl_FragColor = texture2D(uMap, uv);;
+    } else if (uState < 3.5) {
+        gl_FragColor = vec4(vec3(mask), 1.0);
+    } else {
+        gl_FragColor = color;
+    }
 }

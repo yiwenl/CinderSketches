@@ -36,7 +36,8 @@ class KuafuPosterARApp : public App {
     bool                mMtxSaved = false;
     
     float               mOffset = 0.0;
-    float               mTargetOffset = 0.0;
+    float               mTargetOffset = 1.0;
+    int                 mState = 0;
     
     gl::FboRef          mFbo;
     gl::FboRef          mFboRender;
@@ -61,9 +62,9 @@ void KuafuPosterARApp::setup()
     mTextureMountain = gl::Texture2d::create( loadImage( loadAsset( "mountains.png" )));
     
     // init shaders
-    mShaderColor = gl::GlslProg::create( loadAsset( "basic.vert" ), loadAsset( "color.frag" ) );
-    mShaderCopy = gl::GlslProg::create( loadAsset( "basic.vert" ), loadAsset( "copy.frag" ) );
-    mShaderCompose = gl::GlslProg::create( loadAsset( "compose.vert" ), loadAsset( "compose.frag" ) );
+    mShaderColor    = gl::GlslProg::create( loadAsset( "basic.vert" ), loadAsset( "color.frag" ) );
+    mShaderCopy     = gl::GlslProg::create( loadAsset( "basic.vert" ), loadAsset( "copy.frag" ) );
+    mShaderCompose  = gl::GlslProg::create( loadAsset( "compose.vert" ), loadAsset( "compose.frag" ) );
     
     
     
@@ -86,6 +87,12 @@ void KuafuPosterARApp::touchesBegan( TouchEvent event )
 {
     mTouched = true;
     mTargetOffset = 1.0;
+    mState ++;
+    if(mState > 4) {
+        mState = 1;
+    }
+    
+    console() << "State : " << mState << endl;
 }
 
 void KuafuPosterARApp::update()
@@ -125,7 +132,7 @@ void KuafuPosterARApp::update()
         gl::rotate( (float)M_PI * 0.5f, vec3(1,0,0) ); // Make it parallel with the ground
         gl::ScopedGlslProg progColor( mShaderColor );
         mShaderColor->uniform("uSize", a.mPhysicalSize);
-        mShaderColor->uniform("uColor", vec3(1.0, 0.0, 0.0));
+        mShaderColor->uniform("uColor", vec3(1.0, 1.0, 1.0));
         mShaderColor->uniform("uScale", vec2(1.01f));
         mShaderColor->uniform("uTranslate", vec3(0.0f));
         mPlane->draw();
@@ -136,7 +143,6 @@ void KuafuPosterARApp::update()
     
     gl::ScopedFramebuffer fboRender( mFboRender );
     gl::ScopedViewport viewportRender( vec2( 0.0f ), mFboRender->getSize() );
-//    gl::clear( Color( 0, 0, 0 ) );
     gl::clear( ColorAf( 0.0, 0.0, 0.0, 0.0));
     
     for (const auto& a : mARSession.getImageAnchors())
@@ -203,13 +209,21 @@ void KuafuPosterARApp::update()
 
 void KuafuPosterARApp::draw()
 {
-    mOffset += (mTargetOffset - mOffset) * 0.05;
-	gl::clear( Color( 0, 0, 0 ) );
     
     gl::disableDepthRead();
     gl::disableDepthWrite();
     
-    mARSession.drawRGBCaptureTexture( getWindowBounds() );
+    mOffset += (mTargetOffset - mOffset) * 0.05;
+    
+    
+    
+	gl::clear( Color( 0, 0, 0 ) );
+    
+    if(mState != 2 && mState != 3) {
+        mARSession.drawRGBCaptureTexture( getWindowBounds() );
+    }
+    
+    
     
     gl::ScopedMatrices matScp;
     
@@ -218,6 +232,7 @@ void KuafuPosterARApp::draw()
     
     mShaderCompose->uniform("uMap", 0);
     mShaderCompose->uniform("uMaskMap", 1);
+    mShaderCompose->uniform("uState", (float)mState);
     
     mFboRender->getColorTexture()->bind(0);
     mFbo->getColorTexture()->bind(1);
