@@ -16,7 +16,7 @@ using namespace std;
 class Particles002App : public App {
   public:
 	void setup() override;
-	void mouseDown( MouseEvent event ) override;
+    void keyDown( KeyEvent event) override;
 	void update() override;
 	void draw() override;
 
@@ -54,9 +54,11 @@ private:
     
     vec3                    mLightPos;
     float                   mSeed = randFloat(1000.0f);
+    float                   mOffset = 0.0;
+    float                   mTargetOffset = 0.0;
 };
 
-const int    NUM_PARTICLES = 50e4;
+const int    NUM_PARTICLES = 60e4;
 const int    FBO_WIDTH = 2048;
 const int    FBO_HEIGHT = 2048;
 
@@ -71,8 +73,8 @@ struct Particle
 
 
 void prepareSettings( Particles002App::Settings *settings) {
-    settings->setWindowSize(1920, 1080);
-//    settings->setWindowSize(1280, 720);
+//    settings->setWindowSize(1920, 1080);
+    settings->setWindowSize(1280, 720);
 //    settings->setWindowSize(1080 * 0.8, 1350 * 0.8);
     
     settings->setHighDensityDisplayEnabled(); // try removing this line
@@ -87,7 +89,7 @@ void Particles002App::setup()
     gl::enable( GL_POINT_SPRITE_ARB ); // or use: glEnable
     gl::enable( GL_VERTEX_PROGRAM_POINT_SIZE );   // or use: glEnable
     
-    mCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.1f, 10.0f );
+    mCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.01f, 10.0f );
     mCam.lookAt( vec3( 0.0, 0.0, 1.0), vec3( 0.0f ) );
     mCamUi = CameraUi( &mCam, getWindow() );
     
@@ -99,7 +101,7 @@ void Particles002App::setup()
     
     mParticleTex = gl::Texture2d::create( loadImage( loadAsset( "particle.png" )));
     mColorTex = gl::Texture2d::create( loadImage( loadAsset( "image.jpg" )));
-//    mColorTex = gl::Texture2d::create( loadImage( loadAsset( "007.png" )));
+//    mColorTex = gl::Texture2d::create( loadImage( loadAsset( "003.png" )));
     
     initParticles();
 }
@@ -108,11 +110,12 @@ void Particles002App::initParticles() {
     vector<Particle> particles;
     particles.assign( NUM_PARTICLES, Particle() );
 
-    
+    float w = 0.2 * 0.5f;
+    float h = 0.294 * 0.5f;
     
     for( int i =0; i<particles.size(); i++) {
-        float x = randFloat(-0.1, 0.1);
-        float y = randFloat(-0.1, 0.1);
+        float x = randFloat(-w, w);
+        float y = randFloat(-h, h);
         float z = randFloat(-0.01, 0.01);
         
         auto &p = particles.at( i );
@@ -167,7 +170,7 @@ void Particles002App::initParticles() {
     
     // shadow mapping
     float scale = 0.1f;
-    mLightPos = vec3( 2.0f * scale, 10.0f * scale, 4.0f * scale);
+    mLightPos = vec3( 2.0f * scale, 10.0f * scale, 3.0f * scale);
     gl::Texture2d::Format depthFormat;
     depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
     depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
@@ -186,15 +189,23 @@ void Particles002App::initParticles() {
     mCamLight.lookAt( mLightPos, mLightPos * vec3( 1.0, 0.0, 1.0f ) );
 }
 
-void Particles002App::mouseDown( MouseEvent event )
+void Particles002App::keyDown( KeyEvent event )
 {
+    
+    console() << " Key down : " << event.getCode() << endl;
+    if(event.getCode() == 32) {
+
+        mTargetOffset = 1.0;
+    }
 }
 
 void Particles002App::update()
 {
+    mOffset += (mTargetOffset - mOffset) * 0.1;
     gl::ScopedGlslProg prog( mShaderUpdate );
     gl::ScopedState rasterizer( GL_RASTERIZER_DISCARD, true );    // turn off fragment stage
     mShaderUpdate->uniform("uTime", float(getElapsedSeconds()) + mSeed);
+    mShaderUpdate->uniform("uOffset", mOffset);
     
     gl::ScopedVao source( mAttributes[mSourceIndex] );
     gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 0, mParticleBuffer[mDestinationIndex] );
@@ -229,7 +240,7 @@ void Particles002App::updateShadowMap() {
 void Particles002App::draw()
 {
     updateShadowMap();
-    float g = 0.0f;
+    float g = 0.1f;
 	gl::clear( Color( g, g, g ) );
     gl::ScopedMatrices mcp;
     gl::setMatrices( mCam );

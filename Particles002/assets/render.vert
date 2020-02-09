@@ -33,13 +33,13 @@ void main( void )
 	
     float distOffset = uViewport.y * ciProjectionMatrix[1][1] * radius / gl_Position.w;
     float scale = mix(0.5, 1.0, iRandom.x);
-    float lifeScale = smoothstep(0.5, 0.4, abs(iLife - 0.5));
+    float lifeScale = smoothstep(0.0, 0.1, iLife);
     gl_PointSize = distOffset * lifeScale * scale;
     
     vShadowCoord = ( biasMatrix * uShadowMatrix ) * ciPosition;
 
     vLife = iLife;
     
-    vec2 uv = vec2(iPositionOrg.xy / 0.1) * .5 + .5;
+    vec2 uv = vec2(iPositionOrg.xy / vec2(0.2, 0.294)) + .5;
     vColor = texture(uColorMap, uv).rgb;
 }
