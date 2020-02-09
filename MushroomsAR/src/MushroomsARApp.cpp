@@ -161,7 +161,7 @@ void MushroomsARApp::initParticles() {
     
     // shadow mapping
     float scale = 0.05f;
-    mLightPos = vec3( -5.0f * scale, -7.0f * scale, -2.0f * scale);
+    mLightPos = vec3( 5.0f * scale, -7.0f * scale, -2.0f * scale);
     gl::Texture2d::Format depthFormat;
     depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
     depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
