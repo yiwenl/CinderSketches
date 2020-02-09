@@ -67,7 +67,7 @@ void main( void )
     
     vec4 sc         = vShadowCoord / vShadowCoord.w;
     float shadow    = samplePCF4x4( sc );
-//    shadow          = mix(shadow, 1.0, .1);
+    shadow          = mix(shadow, 1.0, .1);
     
     vec3 color = texture(uParticleMap, gl_PointCoord).rgb;
     

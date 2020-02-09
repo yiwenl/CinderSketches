@@ -56,7 +56,7 @@ private:
     float                   mSeed = randFloat(1000.0f);
 };
 
-const int    NUM_PARTICLES = 10e5;
+const int    NUM_PARTICLES = 50e4;
 const int    FBO_WIDTH = 2048;
 const int    FBO_HEIGHT = 2048;
 
@@ -99,6 +99,7 @@ void Particles002App::setup()
     
     mParticleTex = gl::Texture2d::create( loadImage( loadAsset( "particle.png" )));
     mColorTex = gl::Texture2d::create( loadImage( loadAsset( "image.jpg" )));
+//    mColorTex = gl::Texture2d::create( loadImage( loadAsset( "007.png" )));
     
     initParticles();
 }
@@ -228,7 +229,7 @@ void Particles002App::updateShadowMap() {
 void Particles002App::draw()
 {
     updateShadowMap();
-    float g = 0.9f;
+    float g = 0.0f;
 	gl::clear( Color( g, g, g ) );
     gl::ScopedMatrices mcp;
     gl::setMatrices( mCam );
