@@ -184,7 +184,7 @@ void main()
     float lifeOffset = smoothstep(1.0, 0.7, iLife) + 0.1;
     
 
-    vel += acc * 0.0001 * speedOffset * uOffset * lifeOffset;
+    vel += acc * 0.00015 * speedOffset * uOffset * lifeOffset;
     pos += vel;
     vel *= 0.95;
     

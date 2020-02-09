@@ -6,6 +6,7 @@
 #include "cinder/Rand.h"
 #include "Config.hpp"
 
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -63,6 +64,7 @@ private:
     
     float mStartTime    = 0.0f;
     
+    
 };
 
 struct Particle
@@ -89,6 +91,7 @@ void MushroomsARApp::setup()
     mColorTex = gl::Texture2d::create( loadImage( loadAsset( "image.jpg" )));
     
     initParticles();
+    
 }
 
 void MushroomsARApp::initParticles() {
@@ -158,7 +161,7 @@ void MushroomsARApp::initParticles() {
     
     // shadow mapping
     float scale = 0.05f;
-    mLightPos = vec3( -5.0f * scale, -7.0f * scale, 0.0f * scale);
+    mLightPos = vec3( -5.0f * scale, -7.0f * scale, -2.0f * scale);
     gl::Texture2d::Format depthFormat;
     depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
     depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
@@ -180,8 +183,6 @@ void MushroomsARApp::initParticles() {
 
 void MushroomsARApp::touchesBegan( TouchEvent event )
 {
-    
-    
     mTouched = true;
     mState++;
     if(mState == 1) {
@@ -199,9 +200,7 @@ void MushroomsARApp::touchesBegan( TouchEvent event )
 
 void MushroomsARApp::update()
 {
-    if(randFloat() > 0.9) {
-        console() << getFrameRate() << endl;
-    }
+    
     if(mState >= 2) {
         float elapsedTime = getElapsedSeconds() - mStartTime;
         
@@ -301,9 +300,10 @@ void MushroomsARApp::draw()
         gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
     }
 
-    gl::setMatricesWindow( toPixels( getWindowSize() ) );
-    int s = 128 * 2;
-    gl::draw( mFbo->getDepthTexture(), Rectf( 0, 100, s, s+100 ) );
+//    gl::setMatricesWindow( toPixels( getWindowSize() ) );
+//    int s = 128 * 2;
+//    gl::draw( mFbo->getDepthTexture(), Rectf( 0, 100, s, s+100 ) );
+    
 }
 
 CINDER_APP( MushroomsARApp, RendererGl )
