@@ -12,7 +12,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-const int NUM_PARTICLES = 75e4;
+const int NUM_PARTICLES = 50e4;
 const int    FBO_WIDTH  = 2048;
 const int    FBO_HEIGHT = 2048;
 
@@ -50,6 +50,8 @@ private:
     gl::FboRef              mFboEnv;
     
     float hasBegin = 0.0f;
+    float offset = 0.0f;
+    float targetOffset = 0.0f;
 };
 
 
@@ -78,21 +80,22 @@ void PixelatedApp::setup()
     vector<Particle> particles;
     particles.assign( NUM_PARTICLES, Particle() );
     
-    float xRange = 0.15f;
+    float xRange = 0.25f;
     float yRange = 0.5f;
-    float zRange = 0.5f;
+    float zRange = 1.0f;
+    
     
     for( int i =0; i<particles.size(); i++) {
         float x;
         
         float t = randFloat();
         if(t < 0.9) {
-            x = randFloat(xRange * 0.5, xRange);
+            x = randFloat(xRange * 0.75, xRange);
             if(randFloat() > .5) {
                 x *= -1.0;
             }
         } else {
-            x = randFloat(-xRange * .5, xRange * .5);
+            x = randFloat(-xRange * .75, xRange * .75);
         }
         
         
@@ -102,7 +105,7 @@ void PixelatedApp::setup()
         auto &p = particles.at( i );
         
         p.pos = vec3(x, y, z);
-        p.posOrg = vec3(x, y, z - zRange);
+        p.posOrg = vec3(x, y, z - zRange * 0.5);
         p.color = vec3(0, 0, 0);
         p.extra = vec3(0, randFloat(), randFloat());
     }
@@ -152,6 +155,7 @@ void PixelatedApp::setup()
 void PixelatedApp::touchesBegan( TouchEvent event )
 {
     hasBegin = 1.0;
+    targetOffset = 1.0f;
 }
 
 void PixelatedApp::updateEnvMap() {
@@ -166,6 +170,7 @@ void PixelatedApp::updateEnvMap() {
 
 void PixelatedApp::update()
 {
+    offset += (targetOffset - offset) * 0.1f;
     updateEnvMap();
     front = AlfridUtils::getLookDir(mARSession.getViewMatrix());
     frontXZ = front * vec3(1.0, 0.0, 1.0);
@@ -227,6 +232,7 @@ void PixelatedApp::draw()
     // render particles
     gl::ScopedGlslProg prog( mShaderRender );
     mShaderRender->uniform("uViewport", vec2(getWindowSize()));
+    mShaderRender->uniform("uOffset", offset);
     
     gl::ScopedVao vao( mAttributes[mSourceIndex] );
     gl::context()->setDefaultShaderVars();

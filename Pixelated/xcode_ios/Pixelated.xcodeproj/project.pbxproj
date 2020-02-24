@@ -21,6 +21,7 @@
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
 		5920457632074228A8473DA8 /* ARSessionImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5D34E6AEC7249AAB94BB6BB /* ARSessionImpl.mm */; };
 		99D67B9F76BC42F993220BF9 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0F22E558858B42DEB0C44769 /* LaunchScreen.xib */; };
+		BB9150702402A6B800022965 /* wensday.png in Resources */ = {isa = PBXBuildFile; fileRef = BB91506F2402A6B800022965 /* wensday.png */; };
 		C4BFFB50596F41B48EFBBD92 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D787F0C09254946954C1DF3 /* ARKit.framework */; };
 		C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02B121B400300192073 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C725E000121DAC8F00FA186B /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -51,6 +52,7 @@
 		8CE2B4C3F4864A0C801313BF /* Pixelated_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Pixelated_Prefix.pch; sourceTree = "<group>"; };
 		9E44919B1F434968A3BBDA5B /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		B5D34E6AEC7249AAB94BB6BB /* ARSessionImpl.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ARSessionImpl.mm; path = "../blocks/Cinder-ARKit/src/ARSessionImpl.mm"; sourceTree = "<group>"; };
+		BB91506F2402A6B800022965 /* wensday.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = wensday.png; path = ../resources/wensday.png; sourceTree = "<group>"; };
 		C585C2FC85A74054BE382878 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Images.xcassets; sourceTree = "<group>"; };
 		C725E000121DAC8F00FA186B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		C727C02B121B400300192073 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -140,6 +142,7 @@
 		00692BD914FF149000D0FFFF /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				BB91506F2402A6B800022965 /* wensday.png */,
 				00748057165D41390024B57A /* assets */,
 				0097641758224ECBAA3FDC76 /* CinderApp_ios.png */,
 				C585C2FC85A74054BE382878 /* Images.xcassets */,
@@ -269,6 +272,7 @@
 			files = (
 				00748058165D41390024B57A /* assets in Resources */,
 				0D556C897EB44A5EB1E2A313 /* CinderApp_ios.png in Resources */,
+				BB9150702402A6B800022965 /* wensday.png in Resources */,
 				16C3C6515E6148F38FAA8815 /* Images.xcassets in Resources */,
 				99D67B9F76BC42F993220BF9 /* LaunchScreen.xib in Resources */,
 			);

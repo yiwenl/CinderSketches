@@ -19,7 +19,7 @@
 			<key>CFBundleIconFiles</key>
 			<array>
 				<string></string>
-				<string>CinderApp_ios.png</string>
+				<string>wensday.png</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
 			<true/>

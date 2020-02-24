@@ -7,6 +7,7 @@ uniform mat4    ciModelMatrix;
 uniform mat4    uShadowMatrix;
 
 uniform vec2       uViewport;
+uniform float      uOffset;
 
 in vec4            ciPosition;
 in vec3            iPositionOrg;
@@ -24,9 +25,8 @@ void main( void )
     
     float distOffset    = uViewport.y * ciProjectionMatrix[1][1] * radius / gl_Position.w;
     float scale         = mix(1.0, 2.0, iExtra.y);
-    gl_PointSize        = distOffset * scale;
+    gl_PointSize        = distOffset * scale * uOffset;
     
     
     vColor              = iColor;
-    // vColor              = mix(iColor, vec3(1.0, 0.0, 0.0), .5);
 }
