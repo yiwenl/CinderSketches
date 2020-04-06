@@ -14,6 +14,7 @@ struct Particle
     vec3 pos;
     vec3 posOrg;
     vec3 vel;
+    vec3 color;
     vec3 extra;
 };
 
@@ -38,6 +39,7 @@ void ViewParticles::init() {
         p.pos = vec3(x, y, z);
         p.posOrg = vec3(x, y, z);
         p.vel = vec3(0, 0, 0);
+        p.color = randVec3();
         p.extra = vec3(0, randFloat(), randFloat());
     }
     
@@ -57,10 +59,12 @@ void ViewParticles::init() {
         gl::enableVertexAttribArray( 1 );
         gl::enableVertexAttribArray( 2 );
         gl::enableVertexAttribArray( 3 );
+        gl::enableVertexAttribArray( 4 );
         gl::vertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, pos) );
         gl::vertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, posOrg) );
         gl::vertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, vel) );
-        gl::vertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, extra) );
+        gl::vertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, color) );
+        gl::vertexAttribPointer( 4, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, extra) );
     }
     
     
@@ -69,7 +73,18 @@ void ViewParticles::init() {
        .attribLocation( "ciPosition", 0 )
        .attribLocation( "iPositionOrg", 1 )
        .attribLocation( "iVel", 2 )
-       .attribLocation( "iExtra", 3 )
+       .attribLocation( "iColor", 3 )
+       .attribLocation( "iExtra", 4 )
+    );
+    
+    mShaderInit = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "init.vert" ) ).fragment( loadAsset("no_op_es3.frag"))
+    .feedbackFormat( GL_INTERLEAVED_ATTRIBS )
+    .feedbackVaryings( { "position", "positionOrg", "velocity", "color", "extra"} )
+    .attribLocation( "iPosition", 0 )
+    .attribLocation( "iPositionOrg", 1 )
+    .attribLocation( "iVel", 2 )
+    .attribLocation( "iColor", 3 )
+    .attribLocation( "iExtra", 4 )
     );
     
     int FBO_SIZE = 2048;
@@ -84,6 +99,27 @@ void ViewParticles::init() {
 
     gl::ScopedMatrices matScp;
     gl::draw( texture, Rectf( 0, 0, mFboEnv->getWidth(), mFboEnv->getHeight() ) );
+    
+    console() << "Proj * View Matrix : " << endl;
+    console() << mtxProj << endl;
+    
+    // save color
+    gl::ScopedGlslProg prog( mShaderInit );
+    gl::ScopedState rasterizer( GL_RASTERIZER_DISCARD, true );
+    mShaderInit->uniform("uShadowMatrix", mtxProj);
+    mShaderInit->uniform("uModelMatrix", mtxModel);
+    mShaderInit->uniform("uTranslate", pos);
+    gl::ScopedTextureBind texScope( texture, (uint8_t) 0 );
+    mShaderInit->uniform( "uShadowMap", 0 );
+    
+    gl::ScopedVao source( mAttributes[mSourceIndex] );
+    gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 0, mParticleBuffer[mDestinationIndex] );
+    gl::beginTransformFeedback( GL_POINTS );
+    gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
+
+    gl::endTransformFeedback();
+
+    std::swap( mSourceIndex, mDestinationIndex );
 }
 
 void ViewParticles::render() {

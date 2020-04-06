@@ -77,6 +77,8 @@ void Pixelated02App::draw()
     gl::ScopedMatrices matScp;
     gl::setViewMatrix( mARSession.getViewMatrix() );
     gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
+
+    mat4 mtxProj = mARSession.getProjectionMatrix() * mARSession.getViewMatrix();
     
     gl::ScopedGlslProg glslProg( gl::getStockShader( gl::ShaderDef().color() ));
     gl::ScopedColor colScp;
@@ -84,18 +86,18 @@ void Pixelated02App::draw()
         
     for (const auto& a : mARSession.getPlaneAnchors())
     {
-        gl::ScopedMatrices matScp;
-        gl::setModelMatrix( a.mTransform );
-        gl::translate( a.mCenter );
-        gl::rotate( (float)M_PI * 0.5f, vec3(1,0,0) ); // Make it parallel with the ground
-        const float xRad = a.mExtent.x * 0.5f;
-        const float zRad = a.mExtent.z * 0.5f;
-        gl::color( 0.0f, 0.6f, 0.9f, 0.2f );
-        gl::drawSolidRect( Rectf( -xRad,-zRad, xRad, zRad ));
+//        gl::ScopedMatrices matScp;
+//        gl::setModelMatrix( a.mTransform );
+//        gl::translate( a.mCenter );
+//        gl::rotate( (float)M_PI * 0.5f, vec3(1,0,0) ); // Make it parallel with the ground
+//        const float xRad = a.mExtent.x * 0.5f;
+//        const float zRad = a.mExtent.z * 0.5f;
+//        gl::color( 0.0f, 0.6f, 0.9f, 0.2f );
+//        gl::drawSolidRect( Rectf( -xRad,-zRad, xRad, zRad ));
         
         
         if(particleViews.size() == 0) {
-            ViewParticlesRef view = ViewParticles::create(a.mUid, a.mTransform, a.mCenter, mFboEnv->getColorTexture());
+            ViewParticlesRef view = ViewParticles::create(a.mUid, a.mTransform, mtxProj, a.mCenter, mFboEnv->getColorTexture());
                                                             
             particleViews.push_back(view);
         }
@@ -108,7 +110,9 @@ void Pixelated02App::draw()
         ViewParticlesRef view = particleViews.at(i);
         view->render();
     }
+
     
+    /*
     gl::disableDepthRead();
     gl::setMatricesWindow( toPixels( getWindowSize() ) );
     int ss = 128 * 2;
@@ -117,6 +121,9 @@ void Pixelated02App::draw()
     if(particleViews.size() > 0) {
         gl::draw( particleViews.at(0)->texture, Rectf( ss, 0, ss * 2, ss/getWindowAspectRatio() ) );
     }
+     
+     
+     */
 }
 
 CINDER_APP( Pixelated02App, RendererGl )

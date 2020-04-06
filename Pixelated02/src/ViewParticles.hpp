@@ -28,16 +28,18 @@ class ViewParticles {
 public:
     vec3 pos;
     mat4 mtxModel;
+    mat4 mtxProj;
     gl::Texture2dRef texture;
     ARKit::AnchorID id;
     gl::FboRef mFboEnv;
     
     
     
-    ViewParticles(ARKit::AnchorID mId, mat4 mMtxModel, vec3 mPos, gl::Texture2dRef mTexture) {
+    ViewParticles(ARKit::AnchorID mId, mat4 mMtxModel, mat4 mMtxProj, vec3 mPos, gl::Texture2dRef mTexture) {
         id = mId;
         mtxModel = mMtxModel;
-        pos = mPos;
+        mtxProj = mMtxProj;
+        pos = mPos; 
         texture = mTexture;
         
         init();
@@ -46,9 +48,10 @@ public:
     static ViewParticlesRef create(
         ARKit::AnchorID mId,
         mat4 mMtxModel,
+        mat4 mMtxProj,
         vec3 mPos,
         gl::Texture2dRef mTexture
-        ) { return std::make_shared<ViewParticles>(mId, mMtxModel, mPos, mTexture); }
+        ) { return std::make_shared<ViewParticles>(mId, mMtxModel, mMtxProj, mPos, mTexture); }
     
     void init();
     void render();
@@ -56,6 +59,8 @@ public:
 private:
     // shader
     gl::GlslProgRef     mShaderRender;
+    gl::GlslProgRef     mShaderInit;
+    gl::GlslProgRef     mShaderUpdate;
     
     
     // particles
