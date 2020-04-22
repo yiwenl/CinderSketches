@@ -82,7 +82,10 @@ bool SessionImpl::isInterfaceInPortraitOrientation() const
     return UIInterfaceOrientationIsPortrait( [[UIApplication sharedApplication] statusBarOrientation] );
 }
 
-
+void SessionImpl::hitTest()
+{
+    CI_ASSERT_MSG(true, "Start hit testing");
+}
 
 
 // Apple ARKit API Bridge implementation

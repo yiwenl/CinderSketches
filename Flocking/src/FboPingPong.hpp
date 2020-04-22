@@ -12,7 +12,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Fbo.h"
 
-#endif /* FboPingPong_hpp */
+
 
 using namespace ci;
 using namespace ci::app;
@@ -27,16 +27,16 @@ public:
     vector<gl::FboRef> mFbos;
     
     
-    FboPingPong(int mWidth, int mHeight, gl::Fbo::Format mFormat) {
-        gl::FboRef fbo0 = gl::Fbo::create(mWidth, mHeight, mFormat);
-        gl::FboRef fbo1 = gl::Fbo::create(mWidth, mHeight, mFormat);
+    FboPingPong(int mWidth, int mHeight, gl::Fbo::Format mFormat1, gl::Fbo::Format mFormat2) {
+        gl::FboRef fbo0 = gl::Fbo::create(mWidth, mHeight, mFormat1);
+        gl::FboRef fbo1 = gl::Fbo::create(mWidth, mHeight, mFormat2);
         
         mFbos.push_back(fbo0);
         mFbos.push_back(fbo1);
     }
     
-    static FboPingPongRef create(int mWidth, int mHeight, gl::Fbo::Format mFormat) {
-        return std::make_shared<FboPingPong>(mWidth, mHeight, mFormat);
+    static FboPingPongRef create(int mWidth, int mHeight, gl::Fbo::Format mFormat1, gl::Fbo::Format mFormat2) {
+        return std::make_shared<FboPingPong>(mWidth, mHeight, mFormat1, mFormat2);
     }
     
     void swap() {
@@ -52,3 +52,4 @@ public:
         return mFbos[1 - index];
     }
 };
+#endif /* FboPingPong_hpp */

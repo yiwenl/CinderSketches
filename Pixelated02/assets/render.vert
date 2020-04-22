@@ -16,7 +16,7 @@ in vec3            iExtra;
 
 out vec3           vColor;
 
-const float radius = 0.004;
+const float radius = 0.001;
 
 
 void main( void )
@@ -28,4 +28,5 @@ void main( void )
     gl_PointSize        = distOffset * scale;
     
     vColor              = iColor;
+    // vColor = iExtra;
 }

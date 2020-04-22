@@ -23,7 +23,7 @@ static Config& getInstance()
                         
     return instance;
 }
-    int NUM_PARTICLES = 64;
+    int NUM_PARTICLES = 80;
 private:
     Config() {
         

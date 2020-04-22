@@ -15,16 +15,20 @@ void DrawSave::draw(gl::FboRef mFbo) {
     vector<vec3> positions;
     vector<vec2> uvs;
     vector<vec3> extras;
+    vector<vec3> data;
     float num = float(NUM_PARTICLES);
+    
+    console() << M_PI << endl;
     
     for(int i=0; i<NUM_PARTICLES; i++) {
         for(int j=0; j<NUM_PARTICLES; j++) {
-            vec3 p = randVec3() * randFloat();
+            vec3 p = randVec3() * randFloat(2.0, 8.0);
             
             positions.push_back(p);
             float u = i/num * 2.0f - 1.0f;
             float v = j/num * 2.0f - 1.0f;
             uvs.push_back(vec2(u, v));
+            data.push_back(vec3(randFloat(M_PI * 2.0), randFloat(), randFloat()));
             extras.push_back(randVec3());
         }
     }
@@ -32,6 +36,7 @@ void DrawSave::draw(gl::FboRef mFbo) {
     
     gl::VboRef vboPos = gl::Vbo::create(GL_ARRAY_BUFFER, positions);
     gl::VboRef vboUv = gl::Vbo::create(GL_ARRAY_BUFFER, uvs);
+    gl::VboRef vboData = gl::Vbo::create(GL_ARRAY_BUFFER, data);
     gl::VboRef vboExtra = gl::Vbo::create(GL_ARRAY_BUFFER, extras);
         
     gl::VaoRef mVao = gl::Vao::create();
@@ -49,6 +54,10 @@ void DrawSave::draw(gl::FboRef mFbo) {
     gl::vertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid *)0);
     gl::enableVertexAttribArray(2);
     
+    gl::ScopedBuffer vbo3(vboData);
+    gl::vertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid *)0);
+    gl::enableVertexAttribArray(3);
+    
     
     gl::GlslProgRef mShaderSave = gl::GlslProg::create(gl::GlslProg::Format()
         .vertex( loadAsset( "save.vert" ) )
@@ -56,6 +65,7 @@ void DrawSave::draw(gl::FboRef mFbo) {
         .attribLocation("inPosition", 0)
         .attribLocation("inUV", 1)
         .attribLocation("inExtra", 2)
+        .attribLocation("inData", 3)
     );
     
     gl::ScopedGlslProg glsl(mShaderSave);

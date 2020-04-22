@@ -26,6 +26,7 @@ enum PlaneDetection
     None,
     Horizontal,
     Vertical,
+    Both,
 };
 
 
@@ -68,6 +69,9 @@ public:
     /**  Returns true if the interface / app is running in portrait orientation.
     */
     bool isInterfaceInPortraitOrientation() const;
+    
+    
+    void hitTest();
     
     
     std::vector<Anchor>       mAnchors;

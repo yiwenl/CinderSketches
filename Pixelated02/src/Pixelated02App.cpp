@@ -2,10 +2,12 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/Rand.h"
 
 #include "CinderARKit.h"
 #include "BatchHelpers.h"
 #include "ViewParticles.hpp"
+#include "Utils.hpp"
 
 using namespace ci;
 using namespace ci::app;
@@ -13,6 +15,8 @@ using namespace std;
 
 const int    FBO_WIDTH  = 2048;
 const int    FBO_HEIGHT = 2048;
+const int    NUM_VIEWS = 5;
+
 
 class Pixelated02App : public App {
   public:
@@ -24,33 +28,85 @@ class Pixelated02App : public App {
 private:
     ARKit::Session          mARSession;
     BatchBallRef            bBall;
+    BatchPlaneRef           bPlane;
     
     vector<ViewParticlesRef>    particleViews;
     gl::FboRef                  mFboEnv;
+    
+    
+    int  mIndex = 0;
+    
+    vector<vec3> mHits;
+    
+    vec3 mHit;
+    bool hasTouched = false;
+    Ray rayTouch;
 };
 
 void Pixelated02App::setup()
 {
     auto config = ARKit::SessionConfiguration()
                         .trackingType( ARKit::TrackingType::WorldTracking )
-                        .planeDetection( ARKit::PlaneDetection::Vertical );
+                        .planeDetection( ARKit::PlaneDetection::Horizontal );
     
     mARSession.runConfiguration( config );
     
     
     // helpers
     bBall = BatchBall::create();
-    
+    bPlane = BatchPlane::create();
     
     // frame buffer
     gl::Fbo::Format fboFormatEnv;
     mFboEnv = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, fboFormatEnv.colorTexture() );
+    
+    
+    // views
+    
+    for(int i=0; i<NUM_VIEWS; i++) {
+        ViewParticlesRef view = ViewParticles::create();
+        particleViews.push_back(view);
+    }
+    
+    mHit = vec3(999.0);
 }
 
 void Pixelated02App::touchesBegan( TouchEvent event )
 {
-    mARSession.addAnchorRelativeToCamera( vec3(0.0f, 0.0f, -0.5f) );
+    
+    auto anchors = mARSession.getPlaneAnchors();
+    
+    if(anchors.size() == 0) {
+        return;
+    }
+    
+    auto anchor = anchors.at(0);
+    vec3 hit;
+    
+    Ray rayCam = AlfridUtils::getLookRay(mARSession.getCameraPosition(), mARSession.getViewMatrix());
+    
+    bool hasHit = Utils::hitTest(rayCam, anchor, &hit);
+            
+    if(hasHit) {
+        mHits.push_back(hit);
+        
+//        if(mIndex == 0) {
+            mat4 mtxProj = mARSession.getProjectionMatrix() * mARSession.getViewMatrix();
+            
+            ViewParticlesRef view = particleViews.at(mIndex);
+            view->reset(anchor.mUid, anchor.mTransform, mtxProj, hit, mFboEnv->getColorTexture());
+            
+            view->open();
+//        }
+        
+        mIndex++;
+        
+        if(mIndex == particleViews.size() ) {
+            mIndex = 0;
+        }
+    }
 }
+
 
 void Pixelated02App::update()
 {
@@ -61,6 +117,11 @@ void Pixelated02App::update()
     gl::ScopedMatrices matScp;
 
     mARSession.drawRGBCaptureTexture(getWindowBounds());
+    
+    
+    for(const auto& view : particleViews) {
+        view->update();
+    }
 }
 
 void Pixelated02App::draw()
@@ -73,44 +134,38 @@ void Pixelated02App::draw()
     mARSession.drawRGBCaptureTexture( getWindowBounds() );
     
     
-    
     gl::ScopedMatrices matScp;
     gl::setViewMatrix( mARSession.getViewMatrix() );
     gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
 
-    mat4 mtxProj = mARSession.getProjectionMatrix() * mARSession.getViewMatrix();
-    
-    gl::ScopedGlslProg glslProg( gl::getStockShader( gl::ShaderDef().color() ));
-    gl::ScopedColor colScp;
-    gl::color( 1.0f, 1.0f, 1.0f );
-        
-    for (const auto& a : mARSession.getPlaneAnchors())
-    {
-//        gl::ScopedMatrices matScp;
-//        gl::setModelMatrix( a.mTransform );
-//        gl::translate( a.mCenter );
-//        gl::rotate( (float)M_PI * 0.5f, vec3(1,0,0) ); // Make it parallel with the ground
-//        const float xRad = a.mExtent.x * 0.5f;
-//        const float zRad = a.mExtent.z * 0.5f;
-//        gl::color( 0.0f, 0.6f, 0.9f, 0.2f );
-//        gl::drawSolidRect( Rectf( -xRad,-zRad, xRad, zRad ));
-        
-        
-        if(particleViews.size() == 0) {
-            ViewParticlesRef view = ViewParticles::create(a.mUid, a.mTransform, mtxProj, a.mCenter, mFboEnv->getColorTexture());
-                                                            
-            particleViews.push_back(view);
-        }
-        
-    }
     
     gl::enableDepth();
     
+    
+    auto anchors = mARSession.getPlaneAnchors();
+    if(anchors.size() > 0) {
+        auto anchor = anchors.at(0);
+        vec3 hit;
+        
+        Ray rayCam = AlfridUtils::getLookRay(mARSession.getCameraPosition(), mARSession.getViewMatrix());
+        
+        bool hasHit = Utils::hitTest(rayCam, anchor, &hit);
+        
+        if(hasHit) {
+            bBall->draw(hit, vec3(0.0025f), vec3(1.0, 0.0, 0.0));
+        }
+    }
+    
+//
+//
+//    for(auto& mHit: mHits) {
+//        bBall->draw(mHit, vec3(0.01f), vec3(1.0, 0.0, 1.0));
+//    }
+  
     for(int i=0; i<particleViews.size(); i++) {
         ViewParticlesRef view = particleViews.at(i);
         view->render();
     }
-
     
     /*
     gl::disableDepthRead();

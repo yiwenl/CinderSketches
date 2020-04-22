@@ -8,6 +8,8 @@
 #include "CinderARKit.h"
 
 using namespace ARKit;
+using namespace ci::app;
+using namespace std;
 
 Session::Session()
 {
@@ -123,3 +125,6 @@ gl::GlslProgRef Session::createCameraRGBProg()
             })));
 }
 
+void Session::hitTest() {
+    console() << "hit test" <<endl;
+}

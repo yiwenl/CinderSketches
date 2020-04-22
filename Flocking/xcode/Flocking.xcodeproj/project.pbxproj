@@ -22,6 +22,7 @@
 		BB4410B023F20B3F00E88CD3 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = BB4410AF23F20B3F00E88CD3 /* assets */; };
 		BB95681E243B73CD00C64B88 /* DrawSave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB95681C243B73CD00C64B88 /* DrawSave.cpp */; };
 		BB956821243B761100C64B88 /* DrawParticles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB95681F243B761100C64B88 /* DrawParticles.cpp */; };
+		BB956824243B78BC00C64B88 /* DrawUpdate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB956822243B78BC00C64B88 /* DrawUpdate.cpp */; };
 		D5E45AC57C8843B4A3F70547 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 70DB108C97634EB7BA8AE0C9 /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +52,8 @@
 		BB95681D243B73CD00C64B88 /* DrawSave.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = DrawSave.hpp; path = ../src/DrawSave.hpp; sourceTree = "<group>"; };
 		BB95681F243B761100C64B88 /* DrawParticles.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DrawParticles.cpp; path = ../src/DrawParticles.cpp; sourceTree = "<group>"; };
 		BB956820243B761100C64B88 /* DrawParticles.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = DrawParticles.hpp; path = ../src/DrawParticles.hpp; sourceTree = "<group>"; };
+		BB956822243B78BC00C64B88 /* DrawUpdate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DrawUpdate.cpp; path = ../src/DrawUpdate.cpp; sourceTree = "<group>"; };
+		BB956823243B78BC00C64B88 /* DrawUpdate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = DrawUpdate.hpp; path = ../src/DrawUpdate.hpp; sourceTree = "<group>"; };
 		DDB497CE600C4425A9E64475 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EF5B6D557DD941ABA3C4E930 /* FlockingApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = FlockingApp.cpp; path = ../src/FlockingApp.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -95,6 +98,8 @@
 				BB95681D243B73CD00C64B88 /* DrawSave.hpp */,
 				BB95681F243B761100C64B88 /* DrawParticles.cpp */,
 				BB956820243B761100C64B88 /* DrawParticles.hpp */,
+				BB956822243B78BC00C64B88 /* DrawUpdate.cpp */,
+				BB956823243B78BC00C64B88 /* DrawUpdate.hpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -255,6 +260,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB956824243B78BC00C64B88 /* DrawUpdate.cpp in Sources */,
 				BB956821243B761100C64B88 /* DrawParticles.cpp in Sources */,
 				BB95681E243B73CD00C64B88 /* DrawSave.cpp in Sources */,
 				1B7D2A003EF44C3AA65700CB /* FlockingApp.cpp in Sources */,

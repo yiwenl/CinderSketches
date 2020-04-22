@@ -52,6 +52,8 @@
 		9B863B54A9B549758729BAD0 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
 		9D8FB92B02C34F5B8BFB3BB3 /* CinderApp_ios.png */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = CinderApp_ios.png; path = ../resources/CinderApp_ios.png; sourceTree = "<group>"; };
 		AE115F8D31FF4DE1A4FE9F9F /* ARAnchorTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ARAnchorTypes.h; path = "../blocks/Cinder-ARKit/include/ARAnchorTypes.h"; sourceTree = "<group>"; };
+		BB0E4B3B244D97CE0024EDA8 /* EaseNumber.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = EaseNumber.hpp; path = ../src/EaseNumber.hpp; sourceTree = "<group>"; };
+		BB0E4B47244F3CC10024EDA8 /* Utils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Utils.hpp; path = ../src/Utils.hpp; sourceTree = "<group>"; };
 		BBCB0A412416F95300E3C8F6 /* ViewParticles.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ViewParticles.cpp; path = ../src/ViewParticles.cpp; sourceTree = "<group>"; };
 		BBCB0A422416F95300E3C8F6 /* ViewParticles.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ViewParticles.hpp; path = ../src/ViewParticles.hpp; sourceTree = "<group>"; };
 		C725E000121DAC8F00FA186B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -136,8 +138,10 @@
 			isa = PBXGroup;
 			children = (
 				E70C5D998F4B41B583AAB9CE /* Pixelated02App.cpp */,
+				BB0E4B3B244D97CE0024EDA8 /* EaseNumber.hpp */,
 				BBCB0A412416F95300E3C8F6 /* ViewParticles.cpp */,
 				BBCB0A422416F95300E3C8F6 /* ViewParticles.hpp */,
+				BB0E4B47244F3CC10024EDA8 /* Utils.hpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";

@@ -88,7 +88,7 @@ void MushroomsARApp::setup()
     mARSession.runConfiguration( config );
    
     mParticleTex = gl::Texture2d::create( loadImage( loadAsset( "particle.png" )));
-    mColorTex = gl::Texture2d::create( loadImage( loadAsset( "image.jpg" )));
+//    mColorTex = gl::Texture2d::create( loadImage( loadAsset( "image.jpg" )));
     
     initParticles();
     

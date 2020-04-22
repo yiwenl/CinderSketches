@@ -7,8 +7,8 @@ out highp vec4  oColor;
 
 
 void main( void ) {
-    if(length(gl_PointCoord) > 0.5) {
-        discard;
+    if(length(gl_PointCoord - vec2(.5)) > 0.5) {
+        // discard;
     }
     oColor = vec4(vColor, 1.0);
 }

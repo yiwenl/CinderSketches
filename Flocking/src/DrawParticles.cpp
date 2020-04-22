@@ -46,8 +46,12 @@ void DrawParticles::render(gl::FboRef mFbo) {
     gl::ScopedGlslProg glsl(mShaderRender);
     gl::ScopedVao vao(mVao);
     gl::setDefaultShaderVars();
-    gl::ScopedTextureBind texScope( mFbo->getColorTexture(), (uint8_t) 0 );
+    gl::ScopedTextureBind texScope0( mFbo->getTexture2d(GL_COLOR_ATTACHMENT0), (uint8_t) 0 );
     mShaderRender->uniform( "texturePos", 0 );
+    
+    gl::ScopedTextureBind texScope1( mFbo->getTexture2d(GL_COLOR_ATTACHMENT2), (uint8_t) 1 );
+    mShaderRender->uniform( "textureData", 1 );
+    
     mShaderRender->uniform("uViewport", vec2(getWindowSize()));
     
     gl::drawArrays(GL_POINTS, 0, NUM_PARTICLES * NUM_PARTICLES);

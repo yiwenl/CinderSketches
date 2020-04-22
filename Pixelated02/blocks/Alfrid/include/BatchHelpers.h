@@ -11,8 +11,6 @@
 #include "cinder/gl/gl.h"
 #include <stdio.h>
 
-#endif /* BatchHelpers_hpp */
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -22,15 +20,32 @@ const int NUM_DOTS = 100;
 typedef std::shared_ptr<class BatchAxis> BatchAxisRef;
 typedef std::shared_ptr<class BatchGridDots> BatchGridDotsRef;
 typedef std::shared_ptr<class BatchBall> BatchBallRef;
+typedef std::shared_ptr<class BatchPlane> BatchPlaneRef;
 
 class AlfridUtils {
 public:
+    
+    static Ray getLookRay(vec3 pos, mat4 mtxView) {
+        return getLookRay(pos, mtxView, vec3(0, 0, 1));
+    }
+    
+    static Ray getLookRay(vec3 pos, mat4 mtxView, vec3 front) {
+        vec3 dir = getLookDir(mtxView, front);
+        return Ray(pos, dir);
+    }
+    
+    
     static vec3 getLookDir(mat4 mtxView) {
-        vec3 front = vec3(0, 0, 1);
+        return getLookDir(mtxView, vec3(0, 0, 1));
+    }
+    
+    static vec3 getLookDir(mat4 mtxView, vec3 front) {
+        
         mat3 mtxRot = mat3(mtxView);
         mtxRot = glm::transpose(mtxRot);
         front = mtxRot * front;
         front *= -1.0;
+        front = normalize(front);
         
         return front;
     }
@@ -92,8 +107,6 @@ protected:
     gl::GlslProgRef     mShader;
     
     void _init() {
-        console() << " Init Grid dots " << endl;
-        
         vector<vec3> points;
         
         for(int i = 0; i<NUM_DOTS; i++) {
@@ -227,3 +240,128 @@ protected:
         mBatch = gl::Batch::create(sphere, mShader);
     }
 };
+
+class BatchLine {
+public:
+    
+    BatchLine() {
+        
+    }
+    
+    static void draw(vec3 mPointA, vec3 mPointB) {
+        draw(mPointA, mPointB, vec3(1.0), 1.0f);
+    }
+    
+    static void draw(vec3 mPointA, vec3 mPointB, vec3 mColor) {
+        draw(mPointA, mPointB, mColor, 1.0f);
+    }
+    
+    static void draw(vec3 mPointA, vec3 mPointB, vec3 mColor, float mOpacity) {
+        gl::ScopedColor scp;
+        
+        gl::lineWidth(2.0f);
+        gl::color( ColorA( mColor.x, mColor.y, mColor.z, mOpacity ) );
+        gl::begin( GL_LINE_STRIP );
+        gl::vertex( mPointA );
+        gl::vertex( mPointB );
+        gl::end();
+        
+    }
+    
+};
+
+
+class BatchPlane {
+public:
+    
+    static BatchPlaneRef create() { return std::make_shared<BatchPlane>(); }
+    
+    BatchPlane() {
+        _init();
+    }
+    
+    
+    void draw() {
+        draw(vec3(0.0), vec3(1.0), vec3(1.0), 1.0);
+    }
+    
+    void draw(vec3 position) {
+        draw(position, vec3(1.0), vec3(1.0), 1.0);
+    }
+    
+    
+    void draw(vec3 position, vec3 scale) {
+        draw(position, scale, vec3(1.0), 1.0);
+    }
+    
+    
+    void draw(vec3 position, vec3 scale, vec3 color) {
+        draw(position, scale, color, 1.0);
+    }
+    
+    
+    void draw(vec3 position, vec3 scale, vec3 color, float opacity) {
+        gl::ScopedGlslProg progColor( mShader );
+        mShader->uniform("uPosition", position);
+        mShader->uniform("uScale", scale);
+        mShader->uniform("uColor", color);
+        mShader->uniform("uOpacity", opacity);
+        
+        mBatch->draw();
+    }
+    
+protected:
+    gl::BatchRef        mBatch;
+    gl::GlslProgRef     mShader;
+    
+    // methods
+    
+    void _init() {
+        auto plane = gl::VboMesh::create( geom::Plane() );
+        
+        mShader = gl::GlslProg::create( gl::GlslProg::Format()
+                .vertex( CI_GLSL(100, precision highp float;
+
+                uniform mat4    ciModelViewProjection;
+                uniform mat3    ciNormalMatrix;
+
+                attribute vec4        ciPosition;
+                attribute vec2        ciTexCoord0;
+                attribute vec3        ciNormal;
+
+                uniform vec3 uPosition;
+                uniform vec3 uScale;
+
+                varying highp vec3    Normal;
+                varying highp vec2    TexCoord0;
+
+                void main( void )
+                {
+                    vec4 pos        = ciPosition;
+                    pos.xyz         *= uScale;
+                    pos.xyz         += uPosition;
+                    
+                    gl_Position     = ciModelViewProjection * pos;
+                    TexCoord0       = ciTexCoord0;
+                    Normal          = ciNormalMatrix * ciNormal;
+                }))
+                .fragment( CI_GLSL(100, precision mediump float;
+        
+                precision highp float;
+
+                varying vec3 Normal;
+
+                uniform vec3 uColor;
+                uniform float uOpacity;
+
+                void main( void )
+                {
+                    gl_FragColor = vec4( uColor, uOpacity);
+                })));
+        mBatch = gl::Batch::create(plane, mShader);
+    }
+};
+
+
+
+#endif /* BatchHelpers_hpp */

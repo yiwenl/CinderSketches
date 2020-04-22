@@ -116,6 +116,10 @@ static ARConfiguration* getNativeARConfiguration( ARKit::SessionConfiguration co
         case (ARKit::PlaneDetection::Vertical):
           wtc.planeDetection = ARPlaneDetectionVertical;
           break;
+            
+        case (ARKit::PlaneDetection::Both):
+            wtc.planeDetection = ARPlaneDetectionHorizontal | ARPlaneDetectionVertical;
+            break;
     }
     
     if (config.mImageTrackingEnabled)

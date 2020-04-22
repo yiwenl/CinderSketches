@@ -11,8 +11,7 @@
 #include "cinder/gl/gl.h"
 #include "CinderARKit.h"
 #include <stdio.h>
-
-#endif /* ViewParticles_hpp */
+#include "EaseNumber.hpp"
 
 
 using namespace ci;
@@ -32,29 +31,21 @@ public:
     gl::Texture2dRef texture;
     ARKit::AnchorID id;
     gl::FboRef mFboEnv;
+    float mSeed;
     
     
     
-    ViewParticles(ARKit::AnchorID mId, mat4 mMtxModel, mat4 mMtxProj, vec3 mPos, gl::Texture2dRef mTexture) {
-        id = mId;
-        mtxModel = mMtxModel;
-        mtxProj = mMtxProj;
-        pos = mPos; 
-        texture = mTexture;
-        
+    ViewParticles() {
         init();
     }
     
-    static ViewParticlesRef create(
-        ARKit::AnchorID mId,
-        mat4 mMtxModel,
-        mat4 mMtxProj,
-        vec3 mPos,
-        gl::Texture2dRef mTexture
-        ) { return std::make_shared<ViewParticles>(mId, mMtxModel, mMtxProj, mPos, mTexture); }
+    static ViewParticlesRef create() { return std::make_shared<ViewParticles>(); }
     
-    void init();
+    void reset(ARKit::AnchorID mId, mat4 mMtxModel, mat4 mMtxProj, vec3 mPos, gl::Texture2dRef mTexture);
     void render();
+    void update();
+    void open();
+    void init();
 
 private:
     // shader
@@ -69,4 +60,11 @@ private:
     
     std::uint32_t       mSourceIndex        = 0;
     std::uint32_t       mDestinationIndex   = 1;
+    
+    // offsets
+    EaseNumberRef       _offset;
+    
+    bool                _hasInit = false;
 };
+
+#endif /* ViewParticles_hpp */

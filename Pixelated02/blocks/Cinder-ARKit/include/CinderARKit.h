@@ -102,7 +102,9 @@ public:
     */
     float getAmbientColorTemperature() const;
 
-
+    
+    void hitTest();
+    
 private:
 
     /**  Creates the shaders to draw RGB camera capture
