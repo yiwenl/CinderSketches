@@ -19,6 +19,7 @@
 		6962B588FAE74583ADC19F2A /* zenGardenApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8183EC5F43954A3E8D2E56F4 /* zenGardenApp.cpp */; };
 		9C3FCF8A16CD45DAA51D0230 /* ARSessionImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 73DCD99A9E514EFD89251308 /* ARSessionImpl.mm */; };
 		9E884AA03E56471880CFF1D3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0DA34F2EDBD641A1AF586657 /* LaunchScreen.xib */; };
+		BB63F8822458305D00AC1BDA /* ViewFlower.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB63F8802458305D00AC1BDA /* ViewFlower.cpp */; };
 		C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02B121B400300192073 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C725E000121DAC8F00FA186B /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8FFFFA18FF /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091FFFF /* ImageIO.framework */; };
@@ -55,6 +56,8 @@
 		88426241236643DE805647BB /* CinderARKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CinderARKit.h; path = "../blocks/Cinder-ARKit/include/CinderARKit.h"; sourceTree = "<group>"; };
 		8E92AE5E534C417E96830884 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Images.xcassets; sourceTree = "<group>"; };
 		A752B2EC270047038E932151 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
+		BB63F8802458305D00AC1BDA /* ViewFlower.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ViewFlower.cpp; path = ../src/ViewFlower.cpp; sourceTree = "<group>"; };
+		BB63F8812458305D00AC1BDA /* ViewFlower.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ViewFlower.hpp; path = ../src/ViewFlower.hpp; sourceTree = "<group>"; };
 		BBBF0F302457300B00DF871F /* Utils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Utils.hpp; path = ../src/Utils.hpp; sourceTree = "<group>"; };
 		C725E000121DAC8F00FA186B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		C727C02B121B400300192073 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -135,6 +138,8 @@
 			children = (
 				8183EC5F43954A3E8D2E56F4 /* zenGardenApp.cpp */,
 				BBBF0F302457300B00DF871F /* Utils.hpp */,
+				BB63F8802458305D00AC1BDA /* ViewFlower.cpp */,
+				BB63F8812458305D00AC1BDA /* ViewFlower.hpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -284,6 +289,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6962B588FAE74583ADC19F2A /* zenGardenApp.cpp in Sources */,
+				BB63F8822458305D00AC1BDA /* ViewFlower.cpp in Sources */,
 				EAFF8DA7AF154208A249FD13 /* CinderARKit.cpp in Sources */,
 				9C3FCF8A16CD45DAA51D0230 /* ARSessionImpl.mm in Sources */,
 			);
