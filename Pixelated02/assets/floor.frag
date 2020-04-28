@@ -45,14 +45,21 @@ float PCFShadow(sampler2D depths, vec2 size, vec4 shadowCoord) {
 
 
 void main( void ) {
-    if(length(gl_PointCoord - vec2(.5)) > 0.5) {
-        discard;
+    vec4 sc         = vShadowCoord / vShadowCoord.w;
+//    float shadow    = PCFShadow(uShadowMap, uMapSize, sc );
+    // shadow          = mix(shadow, 1.0, .4);
+    
+    float d = texture(uShadowMap, sc.xy).r;
+    float s = d > sc.z - 0.005 ? 1.0 : 0.0;
+    d = s < 1.0 ? 0.0 : 1.0;
+    
+    if(d >= 1.0) {
+//        discard;
     }
     
-    vec4 sc         = vShadowCoord / vShadowCoord.w;
-    float shadow    = PCFShadow(uShadowMap, uMapSize, sc );
-    shadow          = mix(shadow, 1.0, .6);
-    
-    
-    oColor = vec4(vColor * shadow, 1.0);
+    oColor = vec4(vec3(0.0), 1.0 - s);
+//    oColor = vec4(vec3(1.0 - s), 1.0);
+    oColor = vec4(vec3(d), 1.0);
+//    oColor = vec4(sc.xy, 0.0, 1.0);
+//    oColor = vec4(vec3(shadow), 1.0);
 }

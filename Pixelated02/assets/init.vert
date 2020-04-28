@@ -27,7 +27,8 @@ void main()
 {
     positionOrg     = iPositionOrg;
     velocity        = vec3(0.0);
-    extra           = iExtra;
+    extra           = iExtra * vec3(1.0, 1.0, 0.0);
+    
 
     position = iPositionOrg + uTranslate;
     vec3 pos = position;

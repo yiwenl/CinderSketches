@@ -23,8 +23,8 @@ void ViewParticles::init() {
     
     vector<Particle> particles;
     particles.assign( NUM_PARTICLES, Particle() );
-    float range = 0.1;
-    float range_z = 0.01;
+    float range = 0.2;
+    float range_z = 0.001;
     
     for( int i =0; i<particles.size(); i++) {
         float a = randFloat(M_PI * 2.0);
@@ -107,19 +107,49 @@ void ViewParticles::init() {
     // offset
     _offset = EaseNumber::create(0);
     _offset->easing = 0.025;
-    mSeed = randFloat(100.0f);
+    
+    
+    // shadow mapping
+    int fboSize = 1024;
+    
+    gl::Texture2d::Format depthFormat;
+    depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
+    depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
+    depthFormat.setMagFilter( GL_LINEAR );
+    depthFormat.setMinFilter( GL_LINEAR );
+    depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
+    depthFormat.setCompareFunc( GL_LEQUAL );
+    mShadowMapTex = gl::Texture2d::create( fboSize, fboSize, depthFormat );
+    
+    gl::Fbo::Format fboFormat;
+    fboFormat.attachment( GL_DEPTH_ATTACHMENT, mShadowMapTex );
+    _mFboShadow = gl::Fbo::create( fboSize, fboSize, fboFormat );
+    
+    mCamLight.setPerspective( 75.0f, _mFboShadow->getAspectRatio(), 0.3f, 3.0f );
+    
+    // floor
+    
+    mShaderShadow = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "floor.vert" ) ).fragment( loadAsset("floor.frag"))
+    );
+    
+    auto plane = gl::VboMesh::create( geom::Plane() );
+    mBatchFloor = gl::Batch::create(plane, mShaderShadow);
+    
 }
 
 void ViewParticles::reset(ARKit::AnchorID mId, mat4 mMtxModel, mat4 mMtxProj, vec3 mPos, gl::Texture2dRef mTexture) {
     // console() << " Init :" << pos << ", " << NUM_PARTICLES << endl;
     
+    mSeed = randFloat(-1.0f, 1.0f);
+    
     id = mId;
-    mtxModel = mMtxModel;
+    mtxModel = mat4(mMtxModel);
+    mat4 modelInvert = mat4(mMtxModel);
+    modelInvert = glm::inverse(modelInvert);
+    pos = vec3(modelInvert * vec4(mPos, 1.0));
     mtxProj = mMtxProj;
-    pos = mPos;
     texture = mTexture;
     
-    mat4 mtxTemp;
     
     
     
@@ -135,7 +165,7 @@ void ViewParticles::reset(ARKit::AnchorID mId, mat4 mMtxModel, mat4 mMtxProj, ve
     gl::ScopedGlslProg prog( mShaderInit );
     gl::ScopedState rasterizer( GL_RASTERIZER_DISCARD, true );
     mShaderInit->uniform("uShadowMatrix", mtxProj);
-    mShaderInit->uniform("uModelMatrix", mtxTemp);
+    mShaderInit->uniform("uModelMatrix", mtxModel);
     mShaderInit->uniform("uTranslate", pos);
     gl::ScopedTextureBind texScope( texture, (uint8_t) 0 );
     mShaderInit->uniform( "uShadowMap", 0 );
@@ -149,31 +179,23 @@ void ViewParticles::reset(ARKit::AnchorID mId, mat4 mMtxModel, mat4 mMtxProj, ve
 
     std::swap( mSourceIndex, mDestinationIndex );
     
+    
+    // setup light camera
+    vec3 mLightPos = pos + vec3(0.0, 1.5, -0.01);
+    mCamLight.lookAt( mLightPos, pos);
+    _mtxShadow = mCamLight.getProjectionMatrix() * mCamLight.getViewMatrix();
+    
+//    console() << "Reset : " << mLightPos << " -> " << pos << endl;
+    
     _hasInit = true;
-//    _offset->setValue(1.0f);
 }
 
-void ViewParticles::render() {
-    if(!_hasInit) { return; }
-    gl::ScopedMatrices matScp;
-//    gl::setModelMatrix( mtxModel );
-//    gl::translate( pos );
-//    gl::rotate( (float)M_PI * 0.5f, vec3(1,0,0) ); // Make it parallel with the
-    
-    
-    // render particles
-    gl::ScopedGlslProg prog( mShaderRender );
-    mShaderRender->uniform("uViewport", vec2(getWindowSize()));
-    
-    gl::ScopedVao vao( mAttributes[mSourceIndex] );
-    gl::context()->setDefaultShaderVars();
-    gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
-}
 
 void ViewParticles::open() {
     _offset->setTo(1.0f);
     _offset->setValue(0.0f);
 }
+
 
 void ViewParticles::update() {
     // update offset value
@@ -182,11 +204,14 @@ void ViewParticles::update() {
     if(!_hasInit) {
         return;
     }
+    _updateShadowMap();
+    
     
     gl::ScopedGlslProg prog( mShaderUpdate );
     gl::ScopedState rasterizer( GL_RASTERIZER_DISCARD, true );    // turn off fragment stage
     mShaderUpdate->uniform("uTime", float(getElapsedSeconds()) + mSeed);
     mShaderUpdate->uniform("uOffset", _offset->getValue());
+    mShaderUpdate->uniform("uSeed", mSeed);
     
     gl::ScopedVao source( mAttributes[mSourceIndex] );
     gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 0, mParticleBuffer[mDestinationIndex] );
@@ -196,5 +221,57 @@ void ViewParticles::update() {
     gl::endTransformFeedback();
 
     std::swap( mSourceIndex, mDestinationIndex );
+}
+
+
+void ViewParticles::_updateShadowMap() {
     
+//    console() << "Update background : " << _mFboShadow->getSize() << endl;
+    gl::ScopedFramebuffer fbo( _mFboShadow );
+    gl::ScopedViewport viewport( vec2( 0.0f ), _mFboShadow->getSize() );
+    gl::ScopedMatrices matScp;
+    gl::clear( Color( 0, 0, 0 ) );
+    gl::setMatrices( mCamLight );
+
+    gl::ScopedGlslProg prog( mShaderRender );
+    mShaderRender->uniform("uViewport", vec2(getWindowSize()));
+
+    gl::ScopedVao vao( mAttributes[mSourceIndex] );
+    gl::context()->setDefaultShaderVars();
+    gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
+}
+
+
+void ViewParticles::render() {
+    if(!_hasInit) { return; }
+    gl::ScopedMatrices matScp;
+    gl::setModelMatrix(mtxModel);
+    
+    // render particles
+    gl::ScopedGlslProg prog( mShaderRender );
+    mShaderRender->uniform("uViewport", vec2(getWindowSize()));
+    
+    gl::ScopedTextureBind texScope( mShadowMapTex, (uint8_t) 0 );
+    mShaderRender->uniform( "uShadowMap", 0 );
+    
+    mShaderRender->uniform("uShadowMatrix", _mtxShadow);
+    
+    gl::ScopedVao vao( mAttributes[mSourceIndex] );
+    gl::context()->setDefaultShaderVars();
+    gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
+}
+
+void ViewParticles::renderFloor() {
+    if(!_hasInit) { return; }
+//    gl::ScopedMatrices matScp;
+    
+    // render particles
+    gl::ScopedGlslProg prog( mShaderShadow );
+    mShaderShadow->uniform("uShadowMatrix", _mtxShadow);
+    mShaderShadow->uniform("uPosition", pos);
+    
+    gl::ScopedTextureBind texScope( mShadowMapTex, (uint8_t) 0 );
+    mShaderShadow->uniform( "uShadowMap", 0 );
+    
+    mBatchFloor->draw();
 }

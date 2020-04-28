@@ -18,7 +18,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-const int NUM_PARTICLES = 10e4;
+const int NUM_PARTICLES = 50e3;
 
 
 typedef std::shared_ptr<class ViewParticles> ViewParticlesRef;
@@ -43,16 +43,24 @@ public:
     
     void reset(ARKit::AnchorID mId, mat4 mMtxModel, mat4 mMtxProj, vec3 mPos, gl::Texture2dRef mTexture);
     void render();
+    void renderFloor();
     void update();
     void open();
     void init();
+    
+    
+    gl::Texture2dRef    mShadowMapTex;
+    gl::FboRef          _mFboShadow;
 
-private:
+protected:
     // shader
     gl::GlslProgRef     mShaderRender;
+    gl::GlslProgRef     mShaderShadow;
     gl::GlslProgRef     mShaderInit;
     gl::GlslProgRef     mShaderUpdate;
     
+    
+    gl::BatchRef        mBatchFloor;
     
     // particles
     gl::VaoRef          mAttributes[2];
@@ -65,6 +73,11 @@ private:
     EaseNumberRef       _offset;
     
     bool                _hasInit = false;
+    
+    
+    void                _updateShadowMap();
+    mat4                _mtxShadow;
+    CameraPersp         mCamLight;
 };
 
 #endif /* ViewParticles_hpp */

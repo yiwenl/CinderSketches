@@ -16,6 +16,7 @@ out vec3  extra;
 
 uniform float uOffset;
 uniform float uTime;
+uniform float uSeed;
 
 #include "./fragments/const.glsl"
 #include "./fragments/rotate.glsl"
@@ -23,7 +24,6 @@ uniform float uTime;
 
 void main()
 {
-    // vec2 tmp = -vec2(1.0, 0.0) * 0.01 * uOffset;
     vec3 pos        = iPosition;
     vec3 vel        = iVelocity;
     vec3 _extra     = iExtra;
@@ -34,20 +34,21 @@ void main()
     vec3 acc = vec3(0.0);
 
     // noise
-    float posOffset = snoise(pos * 5.0 - uTime) * .5 + .5;
-    posOffset = mix(2.5, 7.5, posOffset);
-    // float posOffset = 5.0;
+     float posOffset = snoise(pos * 2.0 + vec3(0.0, 0.0, uSeed)) * .5 + .5;
+     posOffset = mix(0.5, 2.5, posOffset);
+//    float posOffset = 5.0;
     vec3 noise = curlNoise(pos * posOffset + uTime * 0.2);
-    noise.y = (noise.y * .5 + .5) * 2.0;
-
+    noise.y = (noise.y * .5 + .45) * 2.0;
+    noise.xz *= 0.75;
+    
     acc += noise * 0.5;
 
-    float speedOffset = mix(0.75, 1.0, _extra.g);
-    float initSpeedOffset = smoothstep(0.0, 0.75, _extra.z);
+    float speedOffset = mix(0.95, 1.0, _extra.g);
+    float initSpeedOffset = smoothstep(0.0, 0.5, _extra.z);
     initSpeedOffset = mix(0.01, 1.0, initSpeedOffset);
     initSpeedOffset = pow(initSpeedOffset, 2.0);
     // vel += acc * speedOffset * 0.0005 * uOffset;
-    vel += acc * speedOffset * 0.00075 * uOffset * initSpeedOffset;
+    vel += acc * speedOffset * 0.003 * uOffset * initSpeedOffset;
 
     vel *= 0.96;
     pos += vel;

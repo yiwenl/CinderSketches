@@ -15,8 +15,14 @@ in vec3            iColor;
 in vec3            iExtra;
 
 out vec3           vColor;
+out vec4           vShadowCoord;
 
-const float radius = 0.001;
+const mat4 biasMatrix = mat4( 0.5, 0.0, 0.0, 0.0,
+                              0.0, 0.5, 0.0, 0.0,
+                              0.0, 0.0, 0.5, 0.0,
+                              0.5, 0.5, 0.5, 1.0 );
+
+const float radius = 0.002;
 
 
 void main( void )
@@ -27,6 +33,9 @@ void main( void )
     float scale         = mix(1.0, 2.0, iExtra.y);
     gl_PointSize        = distOffset * scale;
     
+    float br = 1.0 + smoothstep(0.5, 1.0, iExtra.z) * 4.0;
+    
     vColor              = iColor;
+    vShadowCoord        = ( biasMatrix * uShadowMatrix ) * ciPosition;
     // vColor = iExtra;
 }
