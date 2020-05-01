@@ -6,9 +6,7 @@ uniform mat4    ciModelViewProjection;
 uniform mat3    ciNormalMatrix;
 uniform float   uOffset;
 
-uniform vec3 uEnd;
-uniform vec3 uControl0;
-uniform vec3 uControl1;
+uniform float   uTime;
 
 in vec4        ciPosition;
 in vec2        ciTexCoord0;
@@ -23,7 +21,7 @@ in vec3        aExtra;
 
 out vec3    Normal;
 out vec2    TexCoord0;
-out vec3    vColor;
+out vec3    vExtra;
 
 
 #define PI 3.141592653
@@ -53,7 +51,7 @@ void main( void )
         t = sin(ciTexCoord0.y * PI);
     } else {
         t = sin(ciTexCoord0.y * PI);
-        float noise = snoise(vec3(ciTexCoord0.yy * 5.0 * offset, aExtra.x + aExtra.y)) * .5 + .5;
+        float noise = snoise(vec3(ciTexCoord0.yy * 2.0 * offset, aExtra.x + aExtra.y)) * .5 + .5;
         t *= mix(0.1, 1.0, noise);
     }
     
@@ -69,9 +67,17 @@ void main( void )
     vec3 posOffset;
     
     
+    posOffset = bezier(ZERO, aControl0, aControl1, aEnd, ciTexCoord0.y * offset);
     
-    posOffset = bezier(ZERO, aControl0, aControl1, aEnd, ciTexCoord0.y * offset) * DEFAULT_SCALE;
+    float time = mix(0.5, 1.0, aExtra.z) * uTime;
+    t = smoothstep(0.2, 1.0, ciTexCoord0.y);
+//    posOffset += noise * 0.25 * t * vec3(1.0, 0.0, 1.0);
     
+    float r = 1.25;
+    posOffset.x += sin(time) * r * t;
+    posOffset.z += cos(time) * r * t;
+    
+    posOffset *= DEFAULT_SCALE;
     
     pos.xyz += posOffset + aPosOffset * DEFAULT_SCALE;
     
@@ -80,5 +86,5 @@ void main( void )
     Normal          = ciNormalMatrix * ciNormal;
     
     
-    vColor = aPosOffset;
+    vExtra = aExtra;
 }

@@ -275,6 +275,10 @@ public:
         _target = mValue;
     }
     
+    float getTargetValue() {
+        return _target;
+    }
+    
     
     static EaseNumberRef create(float mValue) { return std::make_shared<EaseNumber>(mValue); }
 

@@ -12,6 +12,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 #include "BatchHelpers.h"
+#include "cinder/Perlin.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -48,9 +49,18 @@ public:
     void render();
 
 private :
+    int numLeaves;
+    int numPetals;
+    float timeStart;
+    
     vec3 _pos;
+    vec3 _top;
+    vec3 _ctrl0;
+    vec3 _ctrl1;
         
     vec3 getPos(float y, float r);
+    
+    Perlin perlin;
     
     
     
@@ -63,6 +73,7 @@ private :
     gl::BatchRef        _bFlower;
     
     EaseNumberRef       _offset;
+    EaseNumberRef       _offsetOpening;
     
     // methods
     void _init();
