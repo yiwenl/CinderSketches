@@ -215,3 +215,11 @@ xcuserdata/
 ####
 # UNKNOWN: recommended by others, but I can't discover what these files are
 #
+
+# Visual studio ignore
+.ipch
+packages/
+x64/
+Debug/
+.vs/
+.vscode/

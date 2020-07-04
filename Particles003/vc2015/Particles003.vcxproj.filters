@@ -1,0 +1,64 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Blocks">
+      <UniqueIdentifier>{5653F4AC-8C35-4083-BED8-0599995C9EF9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Alfrid">
+      <UniqueIdentifier>{3B6BF2D2-D188-4CB6-A40C-5317FAB44F1E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Alfrid\include">
+      <UniqueIdentifier>{4011B0DE-C607-400C-B199-8B93D7D28E6F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\Particles003App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Particles003App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\cinder_0.9.2\blocks\AlfridCinder\include\Alfrid.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\cinder_0.9.2\blocks\AlfridCinder\include\BatchHelpers.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\cinder_0.9.2\blocks\AlfridCinder\include\Draw.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\cinder_0.9.2\blocks\AlfridCinder\include\EaseNumber.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\cinder_0.9.2\blocks\AlfridCinder\include\FboPingPong.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\cinder_0.9.2\blocks\AlfridCinder\include\TweenNumber.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

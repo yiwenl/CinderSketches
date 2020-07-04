@@ -1,0 +1,93 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Blocks">
+      <UniqueIdentifier>{92BF0196-9C79-464C-9E52-BB8B0E458B3A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Alfrid">
+      <UniqueIdentifier>{5F72ED8F-9CD4-47CD-8FC1-62669369EB54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Alfrid\include">
+      <UniqueIdentifier>{43A77C5B-A45F-4DE7-AC46-1349AD8388DD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Alfrid\src">
+      <UniqueIdentifier>{433BE7F1-AF46-4D8D-A351-D6C9DB24434B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{d40fe00a-4674-46f8-a2c8-e802a4ef3314}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\AmbientApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\src\AmbientApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\blocks\Alfrid\include\Alfrid.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Alfrid\include\BatchHelpers.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Alfrid\include\Draw.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Alfrid\include\EaseNumber.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Alfrid\include\FboPingPong.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Alfrid\include\Helpers.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Alfrid\include\OrbitalControl.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Alfrid\include\TweenNumber.h">
+      <Filter>Blocks\Alfrid\include</Filter>
+    </ClInclude>
+    <ClCompile Include="..\blocks\Alfrid\src\Helpers.cpp">
+      <Filter>Blocks\Alfrid\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\assets\cubes.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\assets\cubes.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\assets\ao.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\assets\pass.vert">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
