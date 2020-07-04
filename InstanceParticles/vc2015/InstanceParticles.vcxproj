@@ -99,6 +99,10 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\assets\ao.frag" />
+    <None Include="..\assets\cubes.frag" />
+    <None Include="..\assets\cubes.vert" />
+    <None Include="..\assets\pass.vert" />
     <None Include="..\assets\render.frag" />
     <None Include="..\assets\render.vert" />
     <None Include="..\assets\update.vert" />

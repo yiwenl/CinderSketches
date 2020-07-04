@@ -145,20 +145,21 @@ void main() {
 
     vec3 acc = vec3(0.0);
     float posOffset = mix(1.0, 2.0, iExtra.y);
-    vec3 noise = curlNoise(pos * 0.1 * posOffset + uTime * 0.1);
+    vec3 noise = curlNoise(pos * 0.05 * posOffset + uTime * 0.1);
     acc += noise;
 
     float d = length(pos);
 
-    float maxRadius = 2.0;
+    float maxRadius = 1.0;
     if(d > maxRadius) {
         vec3 dir = normalize(pos);
-        float f = (d - maxRadius) * 0.5;
+        float fOffset = mix(0.5, 1.0, iExtra.x);
+        float f = (d - maxRadius) * 0.25 * fOffset;
         acc -= dir * f;
     }
 
     
-    float speedOffset = mix(0.5, 1.0, iExtra.z) * 0.005;
+    float speedOffset = mix(0.15, 1.0, iExtra.z) * 0.005;
     vel += acc * speedOffset;
     vel *= 0.96;
     pos += vel;

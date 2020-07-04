@@ -20,7 +20,7 @@ const int WINDOW_HEIGHT = 1080;
 const int numPoints = 10000;
 const float RANGE = 100.0f;
 const float FOV = 45.0f;
-const float FAR = 200.0f;
+const float FAR = 100.0f;
 const float NEAR = 0.1f;
 
 class AmbientApp : public App {

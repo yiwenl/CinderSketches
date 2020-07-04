@@ -86,5 +86,17 @@
     <None Include="..\assets\update.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="..\assets\cubes.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\cubes.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\ao.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\pass.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

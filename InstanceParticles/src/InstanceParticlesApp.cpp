@@ -17,7 +17,10 @@ const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
 
 
-const int NUM_PARTICLES = 10e2;
+const int NUM_PARTICLES = 5e5;
+const float FOV = 45.0f;
+const float FAR = 30.0f;
+const float NEAR = 0.1f;
 
 class InstanceParticlesApp : public App {
 public:
@@ -32,20 +35,24 @@ private:
 	CameraPersp			mCamera;
 	OrbitalControl*     mOrbControl;
 
-	/*gl::VaoRef			mVao0;
-	gl::VaoRef			mVao1;
-	gl::VboRef			mVboPos0;
-	gl::VboRef			mVboPos1;*/
-
 	gl::GlslProgRef		mShaderUpdate;
 	gl::GlslProgRef		mShaderRender;
+	gl::GlslProgRef		mShaderCube;
+	gl::GlslProgRef		mShaderAO;
 
 	gl::BatchRef		mBatch;
+	gl::BatchRef		mBatchAO;
+
+	gl::Texture2dRef	mDepthTex;
+	gl::FboRef			mFbo;
+	gl::FboRef			mFboSSAO;
+	
 
 	vector<gl::VaoRef> mVaos;
 	vector<vector<gl::VboRef>> mVbos;
 
 	int pivot = 0;
+	float seed = randFloat(5000.0);
 
 	// controls
     params::InterfaceGlRef mParams;
@@ -72,8 +79,8 @@ void InstanceParticlesApp::setup()
 	gl::enable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 	// camera
-	mCamera = CameraPersp(getWindowWidth(), getWindowHeight(), 75.0f, 0.1f, 50.0f);
-	mCamera.lookAt(vec3(-2, 2, 5), vec3(0));
+	mCamera = CameraPersp(getWindowWidth(), getWindowHeight(), FOV, NEAR, FAR);
+	mCamera.lookAt(vec3(-2, 2, 5) * 2.0f, vec3(0));
 	mOrbControl = new OrbitalControl(&mCamera, getWindow());
 	mOrbControl->rx->setValue(0.5);
     mOrbControl->ry->setValue(0.5);
@@ -95,6 +102,8 @@ void InstanceParticlesApp::setup()
 		.attribLocation("iVelocity", 1)
 		.attribLocation("iExtra", 2)
 	);
+
+
 					
 
 	// init points
@@ -137,6 +146,55 @@ void InstanceParticlesApp::setup()
 		gl::vertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	}
 
+
+	gl::VboMeshRef mesh = gl::VboMesh::create(geom::Cube());
+
+	geom::BufferLayout instancedLayout0;
+	instancedLayout0.append(geom::Attrib::CUSTOM_0, 3, 0, 0, 1);
+	geom::BufferLayout instancedLayout1;
+	instancedLayout1.append(geom::Attrib::CUSTOM_1, 3, 0, 0, 1);
+	geom::BufferLayout instancedLayoutVel0;
+	instancedLayoutVel0.append(geom::Attrib::CUSTOM_2, 3, 0, 0, 1);
+	geom::BufferLayout instancedLayoutVel1;
+	instancedLayoutVel1.append(geom::Attrib::CUSTOM_3, 3, 0, 0, 1);
+	geom::BufferLayout instancedLayoutExtra;
+	instancedLayoutExtra.append(geom::Attrib::CUSTOM_4, 3, 0, 0, 1);
+
+	mesh->appendVbo(instancedLayout0, mVbos.at(0).at(0));
+	mesh->appendVbo(instancedLayout1, mVbos.at(1).at(0));
+	mesh->appendVbo(instancedLayoutVel0, mVbos.at(0).at(1));
+	mesh->appendVbo(instancedLayoutVel1, mVbos.at(1).at(1));
+	mesh->appendVbo(instancedLayoutExtra, mVbos.at(0).at(2));
+
+	mShaderCube = gl::GlslProg::create(loadAsset("cubes.vert"), loadAsset("cubes.frag"));
+	mBatch = gl::Batch::create(mesh, mShaderCube, { 
+		{geom::Attrib::CUSTOM_0, "aPosOffset0"}, 
+		{geom::Attrib::CUSTOM_1, "aPosOffset1"},
+		{geom::Attrib::CUSTOM_2, "aVel0"},
+		{geom::Attrib::CUSTOM_3, "aVel1"},
+		{geom::Attrib::CUSTOM_4, "aExtra"},
+		});
+
+
+	// post
+	mShaderAO = gl::GlslProg::create(loadAsset("pass.vert"), loadAsset("ao.frag"));
+
+	int FBO_SIZE = 2048;
+	gl::Texture2d::Format depthFormat;
+	depthFormat.setInternalFormat(GL_DEPTH_COMPONENT32F);
+	mDepthTex = gl::Texture2d::create(FBO_SIZE, FBO_SIZE, depthFormat);
+
+	gl::Fbo::Format format;
+	int numSample = 8;
+	format.setSamples(numSample);
+	format.setCoverageSamples(numSample);
+	format.attachment(GL_DEPTH_ATTACHMENT, mDepthTex);
+	mFbo = gl::Fbo::create(FBO_SIZE, FBO_SIZE, format);
+
+	auto plane = gl::VboMesh::create(geom::Plane().normal(vec3(0, 0, 1)));
+	mBatchAO = gl::Batch::create(plane, mShaderAO);
+
+
 	// controls
     mParams = params::InterfaceGl::create("Controls", vec2(200, 200));
     mParams->addParam("FPS", &fps);
@@ -164,7 +222,7 @@ void InstanceParticlesApp::update()
 	gl::ScopedGlslProg shader(mShaderUpdate);
 	gl::ScopedState rasterizer(GL_RASTERIZER_DISCARD, true);    // turn off fragment stage
 
-	mShaderUpdate->uniform("uTime", (float)getElapsedSeconds());
+	mShaderUpdate->uniform("uTime", (float)getElapsedSeconds() + seed);
 	gl::ScopedVao vaoSource(mVaos.at(pivot));
 
 	auto vbos = mVbos.at(1 - pivot);
@@ -181,23 +239,42 @@ void InstanceParticlesApp::update()
 
 void InstanceParticlesApp::draw()
 {
-	gl::clear();
+	float g = 0.95;
+	gl::clear(Color(g, g, g));
 
-    gl::setMatrices(mCamera);
-	alfrid::helpers::drawAxis();
-	alfrid::helpers::drawDotPlanes();
+	{
+		gl::ScopedFramebuffer fbo(mFbo);
+		gl::clear(Color(g, g, g));
+		gl::ScopedViewport viewport(vec2(0), mFbo->getSize());
+		gl::ScopedGlslProg shader(mShaderCube);
+		gl::setMatrices(mCamera);
+		mShaderCube->uniform("uPivot", (float)pivot);
+		mBatch->drawInstanced(NUM_PARTICLES);
+	}
 
+	gl::viewport(getWindowSize());
+	gl::setMatricesWindow(getWindowSize());
+	//gl::draw(mFbo->getColorTexture(), Rectf(0, 0, getWindowWidth(), getWindowHeight()));	
 
-	gl::ScopedGlslProg shader(mShaderRender);
-	gl::ScopedVao vao(mVaos.at(pivot));
-	gl::context()->setDefaultShaderVars();
-	gl::drawArrays(GL_POINTS, 0, NUM_PARTICLES);
+	{
+		gl::ScopedGlslProg shader(mShaderAO);
+		mShaderAO->uniform("uRatio", getWindowAspectRatio());
+		mShaderAO->uniform("uTexColor", 0);
+		mShaderAO->uniform("uTexDepth", 1);
+		gl::ScopedTextureBind t0(mFbo->getColorTexture(), 0);
+		gl::ScopedTextureBind t1(mFbo->getDepthTexture(), 1);
 
-	mParams->draw();
+		mShaderAO->uniform("uNear", mCamera.getNearClip());
+		mShaderAO->uniform("uFar", mCamera.getFarClip());
+
+		mBatchAO->draw();
+	}
+
+	//mParams->draw();
 }
 
 void InstanceParticlesApp::resize() {
-	mCamera.setPerspective(75, getWindowAspectRatio(), .1f, 100.0f);
+	mCamera.setPerspective(FOV, getWindowAspectRatio(), NEAR, FAR);
 }
 
 CINDER_APP( InstanceParticlesApp, RendererGl( RendererGl::Options().msaa( 4 ) ), prepareSettings )
