@@ -7,9 +7,12 @@
 
 #include "ViewFlower.hpp"
 
+#include "ColorThemes.hpp"
+
 
 void ViewFlower::_init() {
-    console() << "Init View Flower" << endl;
+    // get color themes
+    _colors = ColorThemes::getColor();
     
     timeStart = getElapsedSeconds();
     
@@ -111,6 +114,10 @@ vec3 ViewFlower::getPos(float y, float r) {
     return vec3(randFloat(-r, r), y, randFloat(-r, r));
 }
 
+float ViewFlower::getOpeningOffset() {
+    return _offsetOpening->getValue();
+}
+
 
 void ViewFlower::update() {
     _offset->update();
@@ -120,17 +127,21 @@ void ViewFlower::update() {
         console() << " Flower Opening " << endl;
         _offsetOpening->setValue(1);
     }
+    
+    float time = getElapsedSeconds() * 0.5f;
+    _topOffset = perlin.dnoise(_top.x, _top.z, time);
 }
+
+vec3 ViewFlower::getTop() {
+    return (_top + _topOffset) * 0.01f + _pos;
+}
+
 
 
 void ViewFlower::render() {
     float time = getElapsedSeconds() * 0.5f;
-    vec3 noise = perlin.dnoise(_top.x, _top.z, time);
-    
-    vec3 top = _top + noise;
-    
-//    console() << noise << endl;
-    
+    vec3 top = _top + _topOffset;
+        
     mat4 mtxModel;
     mtxModel = glm::translate(mtxModel, _pos);
     
@@ -141,6 +152,7 @@ void ViewFlower::render() {
     gl::ScopedGlslProg sLeaves( mShaderLeaves );
     mShaderLeaves->uniform("uOffset", _offset->getValue());
     mShaderLeaves->uniform("uTime", time);
+    mShaderLeaves->uniform("uColor", _colors.at(0));
     _bLeaves->drawInstanced(numLeaves);
     
     
@@ -149,6 +161,7 @@ void ViewFlower::render() {
     mShaderStem->uniform("uControl0", _ctrl0);
     mShaderStem->uniform("uControl1", _ctrl1);
     mShaderStem->uniform("uEnd", top);
+    mShaderStem->uniform("uColor", _colors.at(2));
     _bStem->draw();
     
     
@@ -157,5 +170,6 @@ void ViewFlower::render() {
     mShaderFlower->uniform("uNum", (float)numPetals);
     mShaderFlower->uniform("uTime", time);
     mShaderFlower->uniform("uPos", top);
+    mShaderFlower->uniform("uColor", _colors.at(1));
     _bFlower->drawInstanced(numPetals);
 }

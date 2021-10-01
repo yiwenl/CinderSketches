@@ -18,7 +18,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-const int NUM_PARTICLES = 50e3;
+const int NUM_PARTICLES = 40e3;
 
 
 typedef std::shared_ptr<class ViewParticles> ViewParticlesRef;

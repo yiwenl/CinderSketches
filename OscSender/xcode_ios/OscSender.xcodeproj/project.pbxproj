@@ -1,0 +1,470 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		00748058165D41390024B57A /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 00748057165D41390024B57A /* assets */; };
+		0087D25512CD809F002CD69F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D25412CD809F002CD69F /* CoreText.framework */; };
+		00A66A361965AC8800B17EB3 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00A66A351965AC8800B17EB3 /* Accelerate.framework */; };
+		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
+		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
+		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
+		631B37E91E444E18A118685A /* ARSessionImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = F7E53225505C44F19CE056EF /* ARSessionImpl.mm */; };
+		63667D09C44F40ADB574C371 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 37F7ABE5774940428D3DDA44 /* Images.xcassets */; };
+		6EC1F79697EA4C608A7898FA /* CinderARKit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24B2D852B5B64E969B202E6D /* CinderARKit.cpp */; };
+		8601E2A55A2F40E8A2B121C4 /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = B4ECFA7EA31A4FAE9CF974C9 /* CinderApp_ios.png */; };
+		A56ABDBD580A4308B2B80360 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 86F3F5541FA248959527D543 /* LaunchScreen.xib */; };
+		B7A24C58842748E78DC4ED6C /* OscSenderApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB29C70AD2A34F43BADB1380 /* OscSenderApp.cpp */; };
+		BB702616D4E14A328C7D47F6 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E828372213604224B2796812 /* ARKit.framework */; };
+		C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02B121B400300192073 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C725E000121DAC8F00FA186B /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C725E001121DAC8FFFFA18FF /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091FFFF /* ImageIO.framework */; };
+		C727C02E121B400300192073 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02D121B400300192073 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C7FB19D6124BC0D70045AFD2 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */; };
+		DDDDE001121DAC8FFFFADDDD /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDDDDF6A1138442D0091DDDD /* MobileCoreServices.framework */; };
+		E13F016472A548E6806C5194 /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB508909002B4DFCB677F2C7 /* Osc.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		00692BCF14FF149000D0A05E /* OscSender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OscSender.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		00748057165D41390024B57A /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
+		0087D25412CD809F002CD69F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		00A66A351965AC8800B17EB3 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		00CFDF6A1138442D0091FFFF /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		02AC1A98D0794650BCC6A185 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
+		0AB862AA002E4CF68B398875 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0D58774270EB4C098FBABFD0 /* Alfrid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Alfrid.h; path = ../blocks/Alfrid/include/Alfrid.h; sourceTree = "<group>"; };
+		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		24B2D852B5B64E969B202E6D /* CinderARKit.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = CinderARKit.cpp; path = "../blocks/Cinder-ARKit/src/CinderARKit.cpp"; sourceTree = "<group>"; };
+		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		37F7ABE5774940428D3DDA44 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Images.xcassets; sourceTree = "<group>"; };
+		3863E42995EC4997BB9125E6 /* EaseNumber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EaseNumber.h; path = ../blocks/Alfrid/include/EaseNumber.h; sourceTree = "<group>"; };
+		434F75F9C97E4E98AEA1C2AF /* TweenNumber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TweenNumber.h; path = ../blocks/Alfrid/include/TweenNumber.h; sourceTree = "<group>"; };
+		59498C2325484A23866AD6D1 /* CinderARKitUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CinderARKitUtils.h; path = "../blocks/Cinder-ARKit/include/CinderARKitUtils.h"; sourceTree = "<group>"; };
+		5D5B5D180D384B9683F395D1 /* ARAnchorTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ARAnchorTypes.h; path = "../blocks/Cinder-ARKit/include/ARAnchorTypes.h"; sourceTree = "<group>"; };
+		68F8AC24C0B54876865A6CB7 /* OscSender_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = OscSender_Prefix.pch; sourceTree = "<group>"; };
+		6B39C80F19414DFB9FA62248 /* BatchHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BatchHelpers.h; path = ../blocks/Alfrid/include/BatchHelpers.h; sourceTree = "<group>"; };
+		86F3F5541FA248959527D543 /* LaunchScreen.xib */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = LaunchScreen.xib; sourceTree = "<group>"; };
+		9FE412B3F08D45B680761D2F /* Osc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Osc.h; path = ../blocks/OSC/src/cinder/osc/Osc.h; sourceTree = "<group>"; };
+		B4ECFA7EA31A4FAE9CF974C9 /* CinderApp_ios.png */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = CinderApp_ios.png; path = ../resources/CinderApp_ios.png; sourceTree = "<group>"; };
+		BB6E47FD249A230800F3E6B6 /* OrbitalControl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = OrbitalControl.hpp; path = ../src/OrbitalControl.hpp; sourceTree = "<group>"; };
+		BE4EDCED50DC45DAA1493FB9 /* FboPingPong.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FboPingPong.h; path = ../blocks/Alfrid/include/FboPingPong.h; sourceTree = "<group>"; };
+		C725E000121DAC8F00FA186B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		C727C02B121B400300192073 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		C727C02D121B400300192073 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		DDDDDF6A1138442D0091DDDD /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		E3EFE22BBC574A8C8B98EEB8 /* CinderARKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CinderARKit.h; path = "../blocks/Cinder-ARKit/include/CinderARKit.h"; sourceTree = "<group>"; };
+		E72A06D26DAD4A7C967486DF /* Draw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Draw.h; path = ../blocks/Alfrid/include/Draw.h; sourceTree = "<group>"; };
+		E828372213604224B2796812 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
+		EB29C70AD2A34F43BADB1380 /* OscSenderApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = OscSenderApp.cpp; path = ../src/OscSenderApp.cpp; sourceTree = "<group>"; };
+		F7E53225505C44F19CE056EF /* ARSessionImpl.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ARSessionImpl.mm; path = "../blocks/Cinder-ARKit/src/ARSessionImpl.mm"; sourceTree = "<group>"; };
+		FB508909002B4DFCB677F2C7 /* Osc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Osc.cpp; path = ../blocks/OSC/src/cinder/osc/Osc.cpp; sourceTree = "<group>"; };
+		FB7D8D1475444B9EA1F76F1A /* ARSessionImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ARSessionImpl.h; path = "../blocks/Cinder-ARKit/include/ARSessionImpl.h"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		00692BCC14FF149000D0A05E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */,
+				C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */,
+				C725E001121DAC8FFFFA18FF /* ImageIO.framework in Frameworks */,
+				DDDDE001121DAC8FFFFADDDD /* MobileCoreServices.framework in Frameworks */,
+				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
+				28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */,
+				28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */,
+				00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */,
+				C727C02E121B400300192073 /* CoreVideo.framework in Frameworks */,
+				C7FB19D6124BC0D70045AFD2 /* AudioToolbox.framework in Frameworks */,
+				00A66A361965AC8800B17EB3 /* Accelerate.framework in Frameworks */,
+				0087D25512CD809F002CD69F /* CoreText.framework in Frameworks */,
+				BB702616D4E14A328C7D47F6 /* ARKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		00692BC414FF149000D0A05E = {
+			isa = PBXGroup;
+			children = (
+				99692BD914FF149000DFFFFF /* Blocks */,
+				99692BD914FF149000D0A05F /* Headers */,
+				00692BD914FF149000D0A05E /* Source */,
+				00692BD914FF149000D0FFFF /* Resources */,
+				00692BD214FF149000D0A05E /* Frameworks */,
+				00692BD014FF149000D0A05E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		00692BD014FF149000D0A05E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00692BCF14FF149000D0A05E /* OscSender.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00692BD214FF149000D0A05E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */,
+				00A66A351965AC8800B17EB3 /* Accelerate.framework */,
+				C727C02B121B400300192073 /* CoreMedia.framework */,
+				C727C02D121B400300192073 /* CoreVideo.framework */,
+				28FD15070DC6FC5B0079059D /* QuartzCore.framework */,
+				28FD14FF0DC6FC520079059D /* OpenGLES.framework */,
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				00CFDF6A1138442D0091E310 /* CoreGraphics.framework */,
+				00CFDF6A1138442D0091FFFF /* ImageIO.framework */,
+				DDDDDF6A1138442D0091DDDD /* MobileCoreServices.framework */,
+				C725E000121DAC8F00FA186B /* AVFoundation.framework */,
+				0087D25412CD809F002CD69F /* CoreText.framework */,
+				E828372213604224B2796812 /* ARKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		00692BD914FF149000D0A05E /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				EB29C70AD2A34F43BADB1380 /* OscSenderApp.cpp */,
+				BB6E47FD249A230800F3E6B6 /* OrbitalControl.hpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		00692BD914FF149000D0FFFF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				00748057165D41390024B57A /* assets */,
+				B4ECFA7EA31A4FAE9CF974C9 /* CinderApp_ios.png */,
+				37F7ABE5774940428D3DDA44 /* Images.xcassets */,
+				86F3F5541FA248959527D543 /* LaunchScreen.xib */,
+				0AB862AA002E4CF68B398875 /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		0F441EA73822414FAEC93F24 /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				A4237C26F35040BD8385E335 /* osc */,
+			);
+			name = cinder;
+			sourceTree = "<group>";
+		};
+		50971E43E5DF46819684F6A8 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				0F441EA73822414FAEC93F24 /* cinder */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		80CC395A66F044768E3A4BA4 /* Alfrid */ = {
+			isa = PBXGroup;
+			children = (
+				8612F01ABEFA41CFAC0695C1 /* include */,
+			);
+			name = Alfrid;
+			sourceTree = "<group>";
+		};
+		8612F01ABEFA41CFAC0695C1 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				0D58774270EB4C098FBABFD0 /* Alfrid.h */,
+				6B39C80F19414DFB9FA62248 /* BatchHelpers.h */,
+				E72A06D26DAD4A7C967486DF /* Draw.h */,
+				3863E42995EC4997BB9125E6 /* EaseNumber.h */,
+				BE4EDCED50DC45DAA1493FB9 /* FboPingPong.h */,
+				434F75F9C97E4E98AEA1C2AF /* TweenNumber.h */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		99692BD914FF149000D0A05F /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				02AC1A98D0794650BCC6A185 /* Resources.h */,
+				68F8AC24C0B54876865A6CB7 /* OscSender_Prefix.pch */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		99692BD914FF149000DFFFFF /* Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				80CC395A66F044768E3A4BA4 /* Alfrid */,
+				9A9A6C33689D43CEAA435816 /* Cinder-ARKit */,
+				AC4C393BA7A8438EAAE654BE /* OSC */,
+			);
+			name = Blocks;
+			sourceTree = "<group>";
+		};
+		9A9A6C33689D43CEAA435816 /* Cinder-ARKit */ = {
+			isa = PBXGroup;
+			children = (
+				D7CF67CE23884227A0F689C3 /* src */,
+				B60DD4D2D8AC49BEABA8A908 /* include */,
+			);
+			name = "Cinder-ARKit";
+			sourceTree = "<group>";
+		};
+		A4237C26F35040BD8385E335 /* osc */ = {
+			isa = PBXGroup;
+			children = (
+				FB508909002B4DFCB677F2C7 /* Osc.cpp */,
+				9FE412B3F08D45B680761D2F /* Osc.h */,
+			);
+			name = osc;
+			sourceTree = "<group>";
+		};
+		AC4C393BA7A8438EAAE654BE /* OSC */ = {
+			isa = PBXGroup;
+			children = (
+				50971E43E5DF46819684F6A8 /* src */,
+			);
+			name = OSC;
+			sourceTree = "<group>";
+		};
+		B60DD4D2D8AC49BEABA8A908 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				5D5B5D180D384B9683F395D1 /* ARAnchorTypes.h */,
+				FB7D8D1475444B9EA1F76F1A /* ARSessionImpl.h */,
+				E3EFE22BBC574A8C8B98EEB8 /* CinderARKit.h */,
+				59498C2325484A23866AD6D1 /* CinderARKitUtils.h */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		D7CF67CE23884227A0F689C3 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				24B2D852B5B64E969B202E6D /* CinderARKit.cpp */,
+				F7E53225505C44F19CE056EF /* ARSessionImpl.mm */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		00692BCE14FF149000D0A05E /* OscSender */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00692BF514FF149000D0A05E /* Build configuration list for PBXNativeTarget "OscSender" */;
+			buildPhases = (
+				00692BCB14FF149000D0A05E /* Sources */,
+				00692BCC14FF149000D0A05E /* Frameworks */,
+				00692BCD14FF149000D0A05E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OscSender;
+			productName = OscSender;
+			productReference = 00692BCF14FF149000D0A05E /* OscSender.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		00692BC614FF149000D0A05E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				TargetAttributes = {
+					00692BCE14FF149000D0A05E = {
+						DevelopmentTeam = 6SELZG84NA;
+					};
+				};
+			};
+			buildConfigurationList = 00692BC914FF149000D0A05E /* Build configuration list for PBXProject "OscSender" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				en,
+			);
+			mainGroup = 00692BC414FF149000D0A05E;
+			productRefGroup = 00692BD014FF149000D0A05E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				00692BCE14FF149000D0A05E /* OscSender */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		00692BCD14FF149000D0A05E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00748058165D41390024B57A /* assets in Resources */,
+				8601E2A55A2F40E8A2B121C4 /* CinderApp_ios.png in Resources */,
+				63667D09C44F40ADB574C371 /* Images.xcassets in Resources */,
+				A56ABDBD580A4308B2B80360 /* LaunchScreen.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		00692BCB14FF149000D0A05E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B7A24C58842748E78DC4ED6C /* OscSenderApp.cpp in Sources */,
+				6EC1F79697EA4C608A7898FA /* CinderARKit.cpp in Sources */,
+				631B37E91E444E18A118685A /* ARSessionImpl.mm in Sources */,
+				E13F016472A548E6806C5194 /* Osc.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		00692BF314FF149000D0A05E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CINDER_PATH = ../../../../cinder_0.9.1;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
+				CLANG_CXX_LIBRARY = "libc++";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../blocks/Alfrid/include \"../blocks/Cinder-ARKit/include\" \"../blocks/Cinder-ARKit/src\" ../blocks/OSC/src";
+			};
+			name = Debug;
+		};
+		00692BF414FF149000D0A05E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CINDER_PATH = ../../../../cinder_0.9.1;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
+				CLANG_CXX_LIBRARY = "libc++";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"NDEBUG=1",
+					"$(inherited)",
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../blocks/Alfrid/include \"../blocks/Cinder-ARKit/include\" \"../blocks/Cinder-ARKit/src\" ../blocks/OSC/src";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		00692BF614FF149000D0A05E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 6SELZG84NA;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OscSender_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/ios/$(CONFIGURATION)/libcinder.a\"",
+					"-lz",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/ios-sim/$(CONFIGURATION)/libcinder.a\"",
+					"-lz",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		00692BF714FF149000D0A05E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 6SELZG84NA;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OscSender_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/ios/$(CONFIGURATION)/libcinder.a\"",
+					"-lz",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/ios-sim/$(CONFIGURATION)/libcinder.a\"",
+					"-lz",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		00692BC914FF149000D0A05E /* Build configuration list for PBXProject "OscSender" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00692BF314FF149000D0A05E /* Debug */,
+				00692BF414FF149000D0A05E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		00692BF514FF149000D0A05E /* Build configuration list for PBXNativeTarget "OscSender" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00692BF614FF149000D0A05E /* Debug */,
+				00692BF714FF149000D0A05E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 00692BC614FF149000D0A05E /* Project object */;
+}

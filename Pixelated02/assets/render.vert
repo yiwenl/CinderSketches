@@ -22,7 +22,7 @@ const mat4 biasMatrix = mat4( 0.5, 0.0, 0.0, 0.0,
                               0.0, 0.0, 0.5, 0.0,
                               0.5, 0.5, 0.5, 1.0 );
 
-const float radius = 0.002;
+const float radius = 0.0015;
 
 
 void main( void )

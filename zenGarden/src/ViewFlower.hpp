@@ -47,6 +47,9 @@ public:
     
     void update();
     void render();
+    
+    vec3 getTop();
+    float getOpeningOffset();
 
 private :
     int numLeaves;
@@ -55,8 +58,11 @@ private :
     
     vec3 _pos;
     vec3 _top;
+    vec3 _topOffset;
     vec3 _ctrl0;
     vec3 _ctrl1;
+    
+    vector<vec3> _colors;
         
     vec3 getPos(float y, float r);
     

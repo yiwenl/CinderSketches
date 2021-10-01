@@ -25,11 +25,15 @@ void ViewBackground::update() {
 }
 
 
-void ViewBackground::render(gl::Texture2dRef texture) {
+void ViewBackground::render(gl::Texture2dRef texture, gl::Texture2dRef textureMap) {
     gl::ScopedGlslProg prog( _mShader );
     
     gl::ScopedTextureBind texScopeEnv( texture, (uint8_t) 0 );
     _mShader->uniform( "uEnvMap", 0 );
+    
+    gl::ScopedTextureBind texScopeFlower( textureMap, (uint8_t) 1 );
+    _mShader->uniform( "uMap", 1 );
+    
     _mShader->uniform( "uTime", (float)getElapsedSeconds() );
     _mShader->uniform( "uRatio", getWindowAspectRatio());
         

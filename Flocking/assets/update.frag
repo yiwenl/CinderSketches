@@ -122,10 +122,10 @@ void main( void )
     acc += noise * 0.1;
 
     // pull back in
-    
-    dist = length(pos);
+    vec3 center = vec3(8.0);
+    dist = distance(pos, center);
     f = smoothstep(maxRadius * 0.25, maxRadius, dist);
-    dir = normalize(pos);
+    dir = normalize(pos - center);
     acc -= dir * f;
     
     t = mix(0.25, 1.0, extra.g) * uTime + extra.b;

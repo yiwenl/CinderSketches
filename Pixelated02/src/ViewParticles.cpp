@@ -23,7 +23,7 @@ void ViewParticles::init() {
     
     vector<Particle> particles;
     particles.assign( NUM_PARTICLES, Particle() );
-    float range = 0.2;
+    float range = 0.1;
     float range_z = 0.001;
     
     for( int i =0; i<particles.size(); i++) {
@@ -39,7 +39,7 @@ void ViewParticles::init() {
         p.posOrg = vec3(x, y, z);
         p.vel = vec3(0, 0, 0);
         p.color = randVec3();
-        p.extra = vec3(0, randFloat(), randFloat(0.0f, 0.8f));
+        p.extra = vec3(randFloat(), randFloat(), 0.0);
     }
     
     
