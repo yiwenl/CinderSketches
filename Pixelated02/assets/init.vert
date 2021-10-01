@@ -25,9 +25,9 @@ uniform vec3 uTranslate;
 
 void main()
 {
-    positionOrg     = iPositionOrg;
+    positionOrg     = iPositionOrg + uTranslate;
     velocity        = vec3(0.0);
-    extra           = iExtra * vec3(1.0, 1.0, 0.0);
+    extra           = iExtra;
     
 
     position = iPositionOrg + uTranslate;

@@ -256,7 +256,7 @@ void Particles001App::update()
     gl::endTransformFeedback();
 
     // Swap source and destination for next loop
-    std::swap( mSourceIndex, mDestinationIndex );
+//    std::swap( mSourceIndex, mDestinationIndex );
 }
 
 

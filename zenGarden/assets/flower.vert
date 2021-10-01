@@ -45,7 +45,7 @@ void main( void )
   float s = sin(ciTexCoord0.y * PI) * mix(0.8, 1.0, aPosOffset.y);
     
     
-    float noise = snoise(vec3(aPosOffset.x, uTime, aPosOffset.z * 0.1));
+  float noise = snoise(vec3(aPosOffset.x, uTime, aPosOffset.z * 0.1));
   
 
   pos.x *= s;
@@ -54,16 +54,18 @@ void main( void )
   float r = 0.2;
   float totalAngle = 3.0;
   a = -totalAngle * 0.5 + a * totalAngle + mix(-r, r, aPosOffset.z);
-    a += noise * 0.1;
+  a += noise * 0.1;
   pos.xy = rotate(pos.xy, a);
-    pos.z = aPosOffset.x * 0.01;
-
+  pos.z = aPosOffset.x * 0.01;
+    
+    pos.xy = rotate(pos.xy, -PI * 0.5);
   pos = vec3(ciModelViewInverse * vec4(pos, 1.0));
+  
 
   
 
   pos += uPos;
-    pos.y -= 0.1;
+  pos.y -= 0.1;
 
 
   pos *= DEFAULT_SCALE;

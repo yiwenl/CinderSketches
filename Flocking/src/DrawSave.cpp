@@ -8,6 +8,7 @@
 #include "DrawSave.hpp"
 #include "Config.hpp"
 #include "cinder/Rand.h"
+#include "cinder/Log.h"
 
 void DrawSave::draw(gl::FboRef mFbo) {
     
@@ -18,15 +19,19 @@ void DrawSave::draw(gl::FboRef mFbo) {
     vector<vec3> data;
     float num = float(NUM_PARTICLES);
     
-    console() << M_PI << endl;
+    CI_LOG_D(randFloat());
+    
     
     for(int i=0; i<NUM_PARTICLES; i++) {
         for(int j=0; j<NUM_PARTICLES; j++) {
-            vec3 p = randVec3() * randFloat(2.0, 8.0);
+//            vec3 p = randVec3() * randFloat(2.0, 8.0);
+//            p *= 0.1;
+            vec3 p(randFloat(), randFloat(), randFloat());
+            p += 4.0;
             
             positions.push_back(p);
-            float u = i/num * 2.0f - 1.0f;
-            float v = j/num * 2.0f - 1.0f;
+            float u = i/num * 2.0f - 1.0f + 0.5/NUM_PARTICLES;
+            float v = j/num * 2.0f - 1.0f + 0.5/NUM_PARTICLES;;
             uvs.push_back(vec2(u, v));
             data.push_back(vec3(randFloat(M_PI * 2.0), randFloat(), randFloat()));
             extras.push_back(randVec3());

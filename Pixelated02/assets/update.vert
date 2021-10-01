@@ -35,30 +35,37 @@ void main()
 
     // noise
      float posOffset = snoise(pos * 2.0 + vec3(0.0, 0.0, uSeed)) * .5 + .5;
-     posOffset = mix(0.5, 2.5, posOffset);
+     posOffset = mix(0.5, 2.5, posOffset) * 1.5;
 //    float posOffset = 5.0;
     vec3 noise = curlNoise(pos * posOffset + uTime * 0.2);
     noise.y = (noise.y * .5 + .45) * 2.0;
     noise.xz *= 0.75;
     
     acc += noise * 0.5;
+    
+    // rotate force
+    vec3 dir = normalize(pos * vec3(1.0, 0.0, 1.0));
+    dir.xz = rotate(dir.xz, PI * 0.75);
+    float d = length(pos.xz);
+    float f = smoothstep(0.02, 0.1, d);
+    acc += dir * f * 0.5;
 
-    float speedOffset = mix(0.95, 1.0, _extra.g);
-    float initSpeedOffset = smoothstep(0.0, 0.5, _extra.z);
+    float speedOffset = mix(0.5, 1.0, _extra.g);
+    float initSpeedOffset = smoothstep(0.0, 0.25, _extra.z);
     initSpeedOffset = mix(0.01, 1.0, initSpeedOffset);
     initSpeedOffset = pow(initSpeedOffset, 2.0);
-    // vel += acc * speedOffset * 0.0005 * uOffset;
-    vel += acc * speedOffset * 0.003 * uOffset * initSpeedOffset;
+//     vel += acc * speedOffset * 0.00025 * uOffset;
+    vel += acc * speedOffset * 0.002 * uOffset * initSpeedOffset;
 
     vel *= 0.96;
     pos += vel;
 
 
-    _extra.z += 0.01;
+    _extra.z += 0.01 * mix(0.5, 1.0, _extra.r);
     if(_extra.z > 1.0) {
-        // _extra.z = 0.0;
-        // pos = iPositionOrg;
-        // vel = vec3(0.0);
+//        _extra.z = 0.0;
+//        pos = iPositionOrg;
+//        vel = vec3(0.0);
     }
 
 

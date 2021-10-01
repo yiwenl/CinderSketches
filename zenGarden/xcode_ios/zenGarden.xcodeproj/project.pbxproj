@@ -59,8 +59,10 @@
 		A752B2EC270047038E932151 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
 		BB0C0B0A2459E95100EAAA2A /* ViewBackground.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ViewBackground.cpp; path = ../src/ViewBackground.cpp; sourceTree = "<group>"; };
 		BB0C0B0B2459E95100EAAA2A /* ViewBackground.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ViewBackground.hpp; path = ../src/ViewBackground.hpp; sourceTree = "<group>"; };
+		BB4BFE8E245D7B350026CD4D /* ColorThemes.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ColorThemes.hpp; path = ../src/ColorThemes.hpp; sourceTree = "<group>"; };
 		BB63F8802458305D00AC1BDA /* ViewFlower.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ViewFlower.cpp; path = ../src/ViewFlower.cpp; sourceTree = "<group>"; };
 		BB63F8812458305D00AC1BDA /* ViewFlower.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ViewFlower.hpp; path = ../src/ViewFlower.hpp; sourceTree = "<group>"; };
+		BB910838245C2A9A00022E3A /* ViewBall.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ViewBall.hpp; path = ../src/ViewBall.hpp; sourceTree = "<group>"; };
 		BBBF0F302457300B00DF871F /* Utils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Utils.hpp; path = ../src/Utils.hpp; sourceTree = "<group>"; };
 		C725E000121DAC8F00FA186B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		C727C02B121B400300192073 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -145,6 +147,8 @@
 				BB63F8812458305D00AC1BDA /* ViewFlower.hpp */,
 				BB0C0B0A2459E95100EAAA2A /* ViewBackground.cpp */,
 				BB0C0B0B2459E95100EAAA2A /* ViewBackground.hpp */,
+				BB910838245C2A9A00022E3A /* ViewBall.hpp */,
+				BB4BFE8E245D7B350026CD4D /* ColorThemes.hpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";

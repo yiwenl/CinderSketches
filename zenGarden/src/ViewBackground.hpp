@@ -24,7 +24,7 @@ public:
     
     
     void update();
-    void render(gl::Texture2dRef);
+    void render(gl::Texture2dRef, gl::Texture2dRef);
     
     
 private:

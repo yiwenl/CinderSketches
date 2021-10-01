@@ -15,6 +15,7 @@
 #include "DrawUpdate.hpp"
 
 
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -46,6 +47,8 @@ private:
     BatchAxisRef            bAxis;
     BatchGridDotsRef        bDots;
     
+    bool hasSaved = false;
+    
     
     // fbo
     FboPingPongRef        mFbo;
@@ -56,6 +59,7 @@ private:
     
     
     float mSeed = randFloat(10000.0f);
+    int frameCount = 0;
 };
 
 void prepareSettings( FlockingApp::Settings *settings) {
@@ -69,7 +73,7 @@ void prepareSettings( FlockingApp::Settings *settings) {
 
 void FlockingApp::setup()
 {
-    setFrameRate(60.0f);
+    setFrameRate(24.0f);
     gl::enableDepth();
     gl::enable( GL_POINT_SPRITE_ARB ); // or use: glEnable
     gl::enable( GL_VERTEX_PROGRAM_POINT_SIZE );   // or use: glEnable
@@ -95,7 +99,8 @@ void FlockingApp::initParticles()
     
     // init fbo
     
-    auto texFormat = gl::Texture::Format().internalFormat( GL_RGBA32F ).dataType(GL_FLOAT).minFilter(GL_NEAREST).magFilter(GL_NEAREST);
+//    auto texFormat = gl::Texture::Format().internalFormat( GL_RGBA32F ).dataType(GL_FLOAT).minFilter(GL_NEAREST).magFilter(GL_NEAREST);
+    auto texFormat = gl::Texture::Format().internalFormat( GL_RGBA16F ).dataType(GL_HALF_FLOAT).minFilter(GL_NEAREST).magFilter(GL_NEAREST);
     gl::Fbo::Format format1;
     format1.attachment( GL_COLOR_ATTACHMENT0, gl::Texture2d::create( size, size, texFormat ) )
     .attachment( GL_COLOR_ATTACHMENT1, gl::Texture2d::create( size, size, texFormat ) )
@@ -122,6 +127,18 @@ void FlockingApp::update()
 {
     mDrawUpdate->render(mFbo);
     mFbo->swap();
+    
+    if(frameCount++ < 240) {
+        
+        string fileName = "particle" + std::to_string(frameCount) + ".exr";
+//        writeImage( getAppPath() / fs::path( "test.tiff" ), mFbo->read()->getTexture2d(GL_COLOR_ATTACHMENT0)->createSource(), ImageTarget::Options().quality(1.0f) );
+//        writeImage( getAppPath() / fs::path("test.exr"), mFbo->read()->getTexture2d(GL_COLOR_ATTACHMENT0)->createSource(), cinder::ImageTarget::Options().quality(1.0f), "exr");
+        writeImage( getAppPath() / fs::path(fileName), mFbo->read()->getTexture2d(GL_COLOR_ATTACHMENT0)->createSource(), cinder::ImageTarget::Options().quality(1.0f), "exr");
+    
+
+        hasSaved = true;
+    }
+
 }
 
 void FlockingApp::draw()

@@ -9,6 +9,7 @@
 
 #include "ViewFlower.hpp"
 #include "ViewBackground.hpp"
+#include "ViewBall.hpp"
 
 using namespace ci;
 using namespace ci::app;
@@ -31,7 +32,9 @@ private:
     BatchBallRef bBall;
     vector<ViewFlowerRef>   _flowers;
     gl::FboRef              mFboEnv;
+    gl::FboRef              mFboMap;
     ViewBackground*         _vBg;
+    ViewBall*               _vBall;
 };
 
 void zenGardenApp::setup()
@@ -49,8 +52,12 @@ void zenGardenApp::setup()
     gl::Fbo::Format fboFormatEnv;
     mFboEnv = gl::Fbo::create( FBO_SIZE, FBO_SIZE, fboFormatEnv.colorTexture() );
     
+    gl::Fbo::Format fboFormatMap;
+    mFboMap = gl::Fbo::create( FBO_SIZE, FBO_SIZE, fboFormatMap.colorTexture() );
+    
     
     _vBg = new ViewBackground();
+    _vBall = new ViewBall();
 }
 
 void zenGardenApp::touchesBegan( TouchEvent event )
@@ -77,10 +84,29 @@ void zenGardenApp::updateEnvMap() {
     gl::ScopedFramebuffer fbo( mFboEnv );
     gl::ScopedViewport viewport( vec2( 0.0f ), mFboEnv->getSize() );
     gl::clear( Color( 0, 0, 0 ) );
+    mARSession.drawRGBCaptureTexture(getWindowBounds());
+    
+    
+    gl::ScopedFramebuffer fboMap( mFboMap );
+    gl::ScopedViewport viewportMap( vec2( 0.0f ), mFboMap->getSize() );
+    gl::clear( Color( 0, 0, 0 ) );
     
     gl::ScopedMatrices matScp;
+    gl::setViewMatrix( mARSession.getViewMatrix() );
+    gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
     
-    mARSession.drawRGBCaptureTexture(getWindowBounds());
+    gl::disableDepthRead();
+    gl::disableDepthWrite();
+    gl::enableAdditiveBlending();
+    
+        
+    for(auto flower:_flowers) {
+        float s = 0.08f * flower->getOpeningOffset();
+        _vBall->draw(flower->getTop(), vec3(s), mARSession.getCameraPosition());
+    }
+    
+    gl::enableDepth();
+    gl::enableAlphaBlending();
 }
 
 
@@ -108,25 +134,7 @@ void zenGardenApp::draw()
     gl::setViewMatrix( mARSession.getViewMatrix() );
     gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
     
-    _vBg->render(mFboEnv->getColorTexture());
-    /*
-    gl::ScopedGlslProg glslProg( gl::getStockShader( gl::ShaderDef().color() ));
-    gl::ScopedColor colScp;
-    gl::color( 1.0f, 1.0f, 1.0f );
-    
-    
-    for (const auto& a : mARSession.getPlaneAnchors())
-    {
-        gl::ScopedMatrices matScp;
-        gl::setModelMatrix( a.mTransform );
-        gl::translate( a.mCenter );
-        gl::rotate( (float)M_PI * 0.5f, vec3(1,0,0) ); // Make it parallel with the ground
-        const float xRad = a.mExtent.x * 0.5f;
-        const float zRad = a.mExtent.z * 0.5f;
-        gl::color( 0.0f, 0.6f, 0.9f, 0.2f );
-        gl::drawSolidRect( Rectf( -xRad,-zRad, xRad, zRad ));
-    }
-*/
+    _vBg->render(mFboEnv->getColorTexture(), mFboMap->getColorTexture());
     
     Ray rayCam = AlfridUtils::getLookRay(mARSession.getCameraPosition(), mARSession.getViewMatrix());
     
@@ -139,7 +147,7 @@ void zenGardenApp::draw()
         bool hasHit = Utils::hitTest(rayCam, a, &hit);
         
         if(hasHit) {
-            bBall->draw(hit, vec3(0.001f), vec3(0.0));
+            bBall->draw(hit, vec3(0.001f), vec3(0.8));
         }
     }
     

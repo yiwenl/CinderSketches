@@ -5,6 +5,7 @@ precision highp float;
 in vec3    Normal;
 in vec2    TexCoord0;
 
+uniform sampler2D uMap;
 uniform sampler2D uEnvMap;
 uniform float uTime;
 uniform float uRatio;
@@ -24,7 +25,7 @@ out highp vec4  oColor;
 #define uGrainStrength 1.154288846259249
 #define uOffset 0.020718004932858317
 #define uSeed 0.0
-#define uExposureOffset 1.7718553028226913
+#define uExposureOffset 1.5
 
 #define uColor0 vec3(11.0, 0.0, 97.5)/255.0
 #define uColor1 vec3(200.0, 0.0, 11.7)/255.0
@@ -53,13 +54,12 @@ vec3 gradientMap(vec3 color, vec3 color1, vec3 color2) {
 
 
 void main( void ) {
-//    float grain = random(TexCoord0.xy + uTime);
-
     vec2 uv = TexCoord0;
     uv.y = 1.0 - uv.y;
     
-    
     vec2 uvInverted = vec2(uv);
+    float colorMap = texture(uMap, uvInverted).r;
+    colorMap = smoothstep(0.0, 1.0, colorMap);
     
     vec2 diff = uv - 0.5;
     diff.y /= uRatio;
@@ -69,30 +69,30 @@ void main( void ) {
     
     // noise
     uv.y /= uRatio;
-    float noiseBase = snoise(vec3(uSeed, uv * uNoiseScaleBase));
+    float time = uTime * 0.1;
+    float noiseBase = snoise(vec3(uSeed + time, uv * uNoiseScaleBase));
     vec3 noise = curlNoise(vec3(uv * uNoiseScale, uSeed) * noiseBase);
     
     float rnd = random(uv);
     rnd = mix(1.0, rnd, uGrainStrength);
     
     vec2 uvOffset = noise.xy * noise.z;
-    
-    
-    
-    
-    uv = uvInverted + uvOffset * uOffset * rnd;
+//    uv = uvInverted + uvOffset * uOffset * rnd * (1.0 - colorMap);
+    uv = uvInverted + uvOffset * uOffset * rnd * colorMap;
 
     vec4 color = texture(uEnvMap, uv);
-//    colorNoise.rgb = pow(colorNoise.rgb, vec3(1.0/uExposureOffset));
-//    colorNoise.rgb = gradientMap(colorNoise.rgb, uColor0, uColor1, uGradientStrength);
-
-//    oColor = colorNoise;
-     
     
-//    vec4 color = texture(uEnvMap, uv);
-    color.rgb = pow(color.rgb, vec3(1.0/uExposureOffset));
+    float exposure = mix(uExposureOffset, 1.0, 1.0 -colorMap);
     
-    color.rgb = gradientMap(color.rgb, uColor0, uColor1, uGradientStrength);
+    color.rgb = pow(color.rgb, vec3(1.0/exposure));
     
+    float br = mix(0.9, 1.0, colorMap);
+    color.rgb *= br;
+    
+//    color.rgb = gradientMap(color.rgb, uColor0, uColor1, uGradientStrength * (1.0 - colorMap.r));
+    
+//    oColor = mix(color, colorMap, .8);
     oColor = color;
+    
+//    oColor = colorMap;
 }

@@ -87,15 +87,7 @@ void Pixelated02App::resetView() {
     auto anchor = anchors.at(0);
     vec3 hit;
     
-    Ray rayCam = AlfridUtils::getLookRay(mARSession.getCameraPosition(), mARSession.getViewMatrix());
-    
-//    vec3 dir = rayCam.getDirection();
-//    dir.y -= 0.2;
-//    float r = 0.2;
-//    dir.x += randFloat(-r, r);
-//    dir = normalize(dir);
-//    rayCam.setDirection(dir);
-    
+    Ray rayCam = AlfridUtils::getLookRay(mARSession.getCameraPosition(), mARSession.getViewMatrix());   
     bool hasHit = Utils::hitTest(rayCam, anchor, &hit);
             
     if(hasHit) {

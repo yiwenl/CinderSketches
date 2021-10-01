@@ -7,6 +7,7 @@ in vec3    vExtra;
 in vec3    Normal;
 in vec2    TexCoord0;
 
+uniform vec3 uColor;
 
 out highp vec4  oColor;
 
@@ -15,5 +16,5 @@ out highp vec4  oColor;
 
 void main( void ) {
   // oColor = vec4(TexCoord0, 0.0, 1.0);
-  oColor = vec4(GREEN, 1.0);
+  oColor = vec4(uColor * 0.5, 1.0);
 }

@@ -44,6 +44,7 @@ void main( void )
     pos.xyz *= DEFAULT_SCALE;
     pos.x *= 0.3 * mix(0.8, 1.2, aExtra.y);
     pos.y *= 0.0;
+    pos.x *= offset;
     
     float t;
     
