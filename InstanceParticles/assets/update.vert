@@ -145,7 +145,7 @@ void main() {
 
     vec3 acc = vec3(0.0);
     float posOffset = mix(1.0, 2.0, iExtra.y);
-    vec3 noise = curlNoise(pos * 0.05 * posOffset + uTime * 0.1);
+    vec3 noise = curlNoise(pos * 0.05 * posOffset + uTime * 0.05);
     acc += noise;
 
     float d = length(pos);
@@ -159,9 +159,9 @@ void main() {
     }
 
     
-    float speedOffset = mix(0.15, 1.0, iExtra.z) * 0.005;
+    float speedOffset = mix(0.15, 1.0, iExtra.z) * 0.0025;
     vel += acc * speedOffset;
-    vel *= 0.96;
+    vel *= 0.98;
     pos += vel;
 
     position = pos;

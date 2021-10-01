@@ -7,6 +7,7 @@
 #include "cinder/Rand.h"
 #include "Helpers.h"
 #include "OrbitalControl.h"
+#include "ColorThemes.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -17,8 +18,8 @@ const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
 
 
-const int NUM_PARTICLES = 5e5;
-const float FOV = 45.0f;
+const int NUM_PARTICLES = 10e4;
+const float FOV = 120.0f;
 const float FAR = 30.0f;
 const float NEAR = 0.1f;
 
@@ -73,14 +74,18 @@ void InstanceParticlesApp::setup()
     setWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	auto display = Display::getMainDisplay();
 	setWindowPos( (display->getWidth() - WINDOW_WIDTH) * 0.5, (display->getHeight() - WINDOW_HEIGHT) * 0.5);
+	setWindowPos( (display->getWidth() - WINDOW_WIDTH) * 0.5, 30);
 	setFrameRate(60.0f);
 	gl::enableDepth();
 	gl::enable(GL_POINT_SPRITE_ARB);
 	gl::enable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	unsigned int time_ui = unsigned int(time(NULL));
+	seed = float(time_ui % 100) * 0.01f;
+	srand(time_ui);
 
 	// camera
 	mCamera = CameraPersp(getWindowWidth(), getWindowHeight(), FOV, NEAR, FAR);
-	mCamera.lookAt(vec3(-2, 2, 5) * 2.0f, vec3(0));
+	mCamera.lookAt(vec3(-2, 2, 5) * 1.5f, vec3(0));
 	mOrbControl = new OrbitalControl(&mCamera, getWindow());
 	mOrbControl->rx->setValue(0.5);
     mOrbControl->ry->setValue(0.5);
@@ -92,6 +97,7 @@ void InstanceParticlesApp::setup()
 						.fragment( loadAsset("render.frag"))
 						.attribLocation("ciPosition", 0)
 						.attribLocation("aExtra", 2)
+						.attribLocation("aColor", 3)
 					);
 
 	mShaderUpdate = gl::GlslProg::create(gl::GlslProg::Format()
@@ -110,12 +116,21 @@ void InstanceParticlesApp::setup()
 	vector<vec3> points;
 	vector<vec3> vel;
 	vector<vec3> extras;
+	vector<vec3> colors;
+
+	vector<vec3> colorTheme = alfrid::color::getColorTheme();
+
+
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		vec3 v = randVec3() * randFloat();
 		points.push_back(v);
 		vel.push_back(vec3(0));
 		extras.push_back(randVec3() * 0.5f + 0.5f);
+
+		int index = randInt(colorTheme.size());
+		colors.push_back(colorTheme.at(index));
 	}
+	gl::VboRef vboColor = gl::Vbo::create(GL_ARRAY_BUFFER, sizeof(vec3) * NUM_PARTICLES, colors.data(), GL_STATIC_DRAW);
 
 	for (int i = 0; i < 2; i++) {
 		gl::VaoRef vao = gl::Vao::create();
@@ -123,7 +138,7 @@ void InstanceParticlesApp::setup()
 		gl::VboRef vboPos = gl::Vbo::create(GL_ARRAY_BUFFER, sizeof(vec3) * NUM_PARTICLES, points.data(), GL_STATIC_DRAW);
 		gl::VboRef vboVel = gl::Vbo::create(GL_ARRAY_BUFFER, sizeof(vec3) * NUM_PARTICLES, vel.data(), GL_STATIC_DRAW);
 		gl::VboRef vboExtra = gl::Vbo::create(GL_ARRAY_BUFFER, sizeof(vec3) * NUM_PARTICLES, extras.data(), GL_STATIC_DRAW);
-
+		
 		vector<gl::VboRef> vbos;
 		vbos.push_back(vboPos);
 		vbos.push_back(vboVel);
@@ -147,7 +162,8 @@ void InstanceParticlesApp::setup()
 	}
 
 
-	gl::VboMeshRef mesh = gl::VboMesh::create(geom::Cube());
+	//gl::VboMeshRef mesh = gl::VboMesh::create(geom::Cube());
+	gl::VboMeshRef mesh = gl::VboMesh::create(geom::Sphere());
 
 	geom::BufferLayout instancedLayout0;
 	instancedLayout0.append(geom::Attrib::CUSTOM_0, 3, 0, 0, 1);
@@ -159,12 +175,15 @@ void InstanceParticlesApp::setup()
 	instancedLayoutVel1.append(geom::Attrib::CUSTOM_3, 3, 0, 0, 1);
 	geom::BufferLayout instancedLayoutExtra;
 	instancedLayoutExtra.append(geom::Attrib::CUSTOM_4, 3, 0, 0, 1);
+	geom::BufferLayout instancedLayoutColor;
+	instancedLayoutColor.append(geom::Attrib::CUSTOM_5, 3, 0, 0, 1);
 
 	mesh->appendVbo(instancedLayout0, mVbos.at(0).at(0));
 	mesh->appendVbo(instancedLayout1, mVbos.at(1).at(0));
 	mesh->appendVbo(instancedLayoutVel0, mVbos.at(0).at(1));
 	mesh->appendVbo(instancedLayoutVel1, mVbos.at(1).at(1));
 	mesh->appendVbo(instancedLayoutExtra, mVbos.at(0).at(2));
+	mesh->appendVbo(instancedLayoutColor, vboColor);
 
 	mShaderCube = gl::GlslProg::create(loadAsset("cubes.vert"), loadAsset("cubes.frag"));
 	mBatch = gl::Batch::create(mesh, mShaderCube, { 
@@ -173,6 +192,7 @@ void InstanceParticlesApp::setup()
 		{geom::Attrib::CUSTOM_2, "aVel0"},
 		{geom::Attrib::CUSTOM_3, "aVel1"},
 		{geom::Attrib::CUSTOM_4, "aExtra"},
+		{geom::Attrib::CUSTOM_5, "aColor"},
 		});
 
 
@@ -258,7 +278,6 @@ void InstanceParticlesApp::draw()
 
 	{
 		gl::ScopedGlslProg shader(mShaderAO);
-		mShaderAO->uniform("uRatio", getWindowAspectRatio());
 		mShaderAO->uniform("uTexColor", 0);
 		mShaderAO->uniform("uTexDepth", 1);
 		gl::ScopedTextureBind t0(mFbo->getColorTexture(), 0);

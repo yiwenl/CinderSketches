@@ -7,7 +7,6 @@ uniform sampler2D uTexColor;
 uniform sampler2D uTexDepth;
 uniform float uNear;
 uniform float uFar;
-uniform float uRatio;
 
 out vec4 fragColor;
 

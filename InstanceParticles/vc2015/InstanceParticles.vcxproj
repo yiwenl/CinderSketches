@@ -118,8 +118,10 @@
     <ClInclude Include="..\blocks\Alfrid\include\Helpers.h" />
     <ClInclude Include="..\blocks\Alfrid\include\OrbitalControl.h" />
     <ClInclude Include="..\blocks\Alfrid\include\TweenNumber.h" />
+    <ClInclude Include="..\src\ColorThemes.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ColorThemes.cpp" />
     <ClCompile Include="..\src\InstanceParticlesApp.cpp" />
     <ClCompile Include="..\blocks\Alfrid\src\Helpers.cpp" />
   </ItemGroup>

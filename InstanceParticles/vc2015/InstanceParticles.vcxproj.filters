@@ -65,9 +65,15 @@
     <ClCompile Include="..\blocks\Alfrid\src\Helpers.cpp">
       <Filter>Blocks\Alfrid\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\ColorThemes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ColorThemes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

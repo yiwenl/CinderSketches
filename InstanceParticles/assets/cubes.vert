@@ -11,6 +11,7 @@ in vec3 aPosOffset1;
 in vec3 aVel0;
 in vec3 aVel1;
 in vec3 aExtra;
+in vec3 aColor;
 
 uniform mat3 ciNormalMatrix;
 uniform mat4 ciModelViewProjection;
@@ -18,6 +19,7 @@ uniform float uPivot;
 
 out vec4	vPosition;
 out vec3	vNormal;
+out vec3	vColor;
 out vec2	vTexCoord0;
 
 #define HEAD vec3(1.0, 0.0, 0.0)
@@ -43,7 +45,7 @@ vec3 rotate(vec3 v, vec3 axis, float angle) {
 void main() {
     vec4 pos        = ciPosition;
     float scaleYZ   = step(ciPosition.x, 0.0);
-    scaleYZ = mix(scaleYZ, 1.0, .25);
+    scaleYZ = mix(scaleYZ, 1.0, 1.0);
 
     pos.xyz         *= 0.1;
     pos.yz          *= scaleYZ;
@@ -74,5 +76,6 @@ void main() {
 	//vNormal			= normalize( ciNormalMatrix * N );
 	vNormal			= normalize( N );
     vTexCoord0 		= ciTexCoord0;
+    vColor          = aColor;
 
 }
